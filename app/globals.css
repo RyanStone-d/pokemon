@@ -1,0 +1,271 @@
+@import "tailwindcss";
+
+/* ══════════════════════════════════════════════════════════════
+   PokéNexus — Obsidian Index Design System
+   Tailwind v4 configuration
+   ══════════════════════════════════════════════════════════════ */
+
+/* ─── 1. CSS 設計 Token（執行期可覆寫）───────────────────────── */
+:root {
+  /* 主色盤 */
+  --pn-bg: #131315;
+  --pn-surface: #1e1e22;
+  --pn-surface-2: #26262c;
+  --pn-accent: #ff1c1c;
+  --pn-accent-muted: rgba(255, 28, 28, 0.18);
+  --pn-text: #f0f0f0;
+  --pn-text-muted: #9999aa;
+  --pn-border: rgba(255, 255, 255, 0.08);
+
+  /* 圓角尺寸 */
+  --pn-radius: 16px;
+  --pn-radius-sm: 10px;
+  --pn-radius-lg: 24px;
+
+  /* 18 種屬性顏色 */
+  --type-normal: #a8a878;
+  --type-fire: #f08030;
+  --type-water: #6890f0;
+  --type-electric: #f8d030;
+  --type-grass: #78c850;
+  --type-ice: #98d8d8;
+  --type-fighting: #c03028;
+  --type-poison: #a040a0;
+  --type-ground: #e0c068;
+  --type-flying: #a890f0;
+  --type-psychic: #f85888;
+  --type-bug: #a8b820;
+  --type-rock: #b8a038;
+  --type-ghost: #705898;
+  --type-dragon: #7038f8;
+  --type-dark: #705848;
+  --type-steel: #b8b8d0;
+  --type-fairy: #ee99ac;
+}
+
+/* ─── 2. Tailwind v4 主題註冊（自動產生工具類別）────────────── */
+/* inline 模式：Tailwind 產生的 class 輸出 var() 參照而非固定值，
+   支援執行期換主題。                                            */
+@theme inline {
+  /* ── 顏色 ── */
+  --color-background: var(--pn-bg);
+  --color-surface: var(--pn-surface);
+  --color-surface-2: var(--pn-surface-2);
+  --color-accent: var(--pn-accent);
+  --color-accent-muted: var(--pn-accent-muted);
+  --color-foreground: var(--pn-text);
+  --color-muted: var(--pn-text-muted);
+  --color-border: var(--pn-border);
+
+  /* 屬性顏色 → 自動產生 bg-type-fire / text-type-water … 等 class */
+  --color-type-normal: var(--type-normal);
+  --color-type-fire: var(--type-fire);
+  --color-type-water: var(--type-water);
+  --color-type-electric: var(--type-electric);
+  --color-type-grass: var(--type-grass);
+  --color-type-ice: var(--type-ice);
+  --color-type-fighting: var(--type-fighting);
+  --color-type-poison: var(--type-poison);
+  --color-type-ground: var(--type-ground);
+  --color-type-flying: var(--type-flying);
+  --color-type-psychic: var(--type-psychic);
+  --color-type-bug: var(--type-bug);
+  --color-type-rock: var(--type-rock);
+  --color-type-ghost: var(--type-ghost);
+  --color-type-dragon: var(--type-dragon);
+  --color-type-dark: var(--type-dark);
+  --color-type-steel: var(--type-steel);
+  --color-type-fairy: var(--type-fairy);
+
+  /* ── 字型 → 產生 font-sans / font-mono ── */
+  --font-sans: "Sora", sans-serif;
+  --font-mono: "Sora", sans-serif;
+
+  /* ── 字級 → 產生 text-xs / text-sm … text-4xl ── */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+
+  /* ── 圓角 → 產生 rounded-sm / rounded / rounded-lg / rounded-xl ── */
+  --radius-sm: var(--pn-radius-sm); /* 10px */
+  --radius: var(--pn-radius); /* 16px */
+  --radius-lg: var(--pn-radius-lg); /* 24px */
+  --radius-xl: 32px;
+  --radius-full: 9999px;
+
+  /* ── 自訂陰影 → 產生 shadow-card / shadow-card-hover / shadow-overlay ── */
+  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-card-hover: 0 8px 32px rgba(0, 0, 0, 0.45);
+  --shadow-overlay: 0 24px 64px rgba(0, 0, 0, 0.6);
+
+  /* ── 自訂 Z-index → 產生 z-sidebar / z-overlay ── */
+  --z-sidebar: 40;
+  --z-overlay: 50;
+
+  /* ── 自訂間距（側邊欄寬度）→ 產生 w-sidebar / ml-sidebar 等 ── */
+  --spacing-sidebar: 240px;
+
+  /* ── 動畫時長 → 產生 duration-fast / duration-normal ── */
+  --animate-duration-fast: 200ms;
+  --animate-duration-normal: 300ms;
+  --animate-duration-slow: 600ms;
+}
+
+/* ─── 3. 動畫關鍵影格定義 ────────────────────────────────────── */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ─── 4. Base Layer：重置與基礎 HTML 樣式 ────────────────────── */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    min-height: 100%;
+    background-color: var(--pn-bg);
+    color: var(--pn-text);
+    font-family: "Sora", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 捲軸樣式 */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--pn-bg);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--pn-surface-2);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3a3a44;
+  }
+}
+
+/* ─── 5. Components Layer：可複用元件樣式 ────────────────────── */
+@layer components {
+  /* 玻璃形態側邊欄 / 覆蓋層 */
+  .glass {
+    background: rgba(30, 30, 34, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--pn-border);
+  }
+
+  .glass-strong {
+    background: rgba(19, 19, 21, 0.85);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--pn-border);
+  }
+
+  /* 寶可夢卡片：容器不縮放，圖片縮放 */
+  .pokemon-card {
+    border-radius: var(--pn-radius);
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+  }
+
+  .pokemon-card:hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .pokemon-card .card-image {
+    transition: transform 0.2s ease-out;
+    width: 100%;
+    display: block;
+  }
+
+  .pokemon-card:hover .card-image {
+    transform: scale(1.05);
+  }
+
+  /* 能力值進度條 */
+  .stat-bar-track {
+    height: 8px;
+    border-radius: 9999px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .stat-bar-fill {
+    height: 100%;
+    border-radius: 9999px;
+    background: var(--pn-accent);
+    transition: width 0.6s ease;
+  }
+
+  /* 連線狀態標籤 */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--text-xs);
+    color: var(--pn-text-muted);
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: #22c55e;
+    box-shadow: 0 0 6px #22c55e;
+  }
+}
+
+/* ─── 6. 自訂 Utilities：支援 Tailwind 變體修飾（hover: / group-*）*/
+/* 動畫工具類別 */
+@utility animate-fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+@utility animate-scale-in {
+  animation: scaleIn 0.3s ease forwards;
+}
+
+@utility animate-slide-in {
+  animation: slideInLeft 0.3s ease forwards;
+}
