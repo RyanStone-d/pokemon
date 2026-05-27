@@ -9,13 +9,16 @@
 :root {
   /* 主色盤 */
   --pn-bg: #131315;
+  --pn-overlay: #1b1b1d;
   --pn-surface: #1e1e22;
+  --pn-surface-hover: #201f21;
   --pn-surface-2: #26262c;
   --pn-accent: #ff1c1c;
   --pn-accent-muted: rgba(255, 28, 28, 0.18);
   --pn-text: #f0f0f0;
   --pn-text-muted: #9999aa;
   --pn-border: rgba(255, 255, 255, 0.08);
+  --pn-border-warm: #5f3f3a;
 
   /* 圓角尺寸 */
   --pn-radius: 16px;
@@ -49,13 +52,16 @@
 @theme inline {
   /* ── 顏色 ── */
   --color-background: var(--pn-bg);
+  --color-overlay: var(--pn-overlay);
   --color-surface: var(--pn-surface);
+  --color-surface-hover: var(--pn-surface-hover);
   --color-surface-2: var(--pn-surface-2);
   --color-accent: var(--pn-accent);
   --color-accent-muted: var(--pn-accent-muted);
   --color-foreground: var(--pn-text);
   --color-muted: var(--pn-text-muted);
   --color-border: var(--pn-border);
+  --color-border-warm: var(--pn-border-warm);
 
   /* 屬性顏色 → 自動產生 bg-type-fire / text-type-water … 等 class */
   --color-type-normal: var(--type-normal);
