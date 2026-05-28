@@ -11,7 +11,13 @@ export default function SideNav() {
       </Link>
 
       <div className="flex gap-2 items-center md:p-3 bg-surface-hover rounded mb-2">
-        <Image width={48} height={48} src="/vercel.svg" alt="Vercel Logo" />
+        <Image
+          width={0}
+          height={0}
+          style={{ width: "48px", height: "auto" }}
+          src="/vercel.svg"
+          alt="Vercel Logo"
+        />
         <div>Ryan</div>
       </div>
 

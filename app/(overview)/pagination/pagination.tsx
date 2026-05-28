@@ -1,16 +1,21 @@
 "use client";
 
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
-import { useSearchParams, usePathname } from "next/navigation";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 import { generatePagination } from "./generatePagination";
 
-export default function Pagination({ totalPages }: { totalPages: number }) {
+export default function Pagination({
+  totalPages,
+  currentPage,
+}: {
+  totalPages: number;
+  currentPage: number;
+}) {
   const pathName = usePathname();
   const searchParams = useSearchParams();
-  const currentPage = parseInt(searchParams.get("page") || "1", 10);
 
   const createPageUrl = (page: number | string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -76,7 +81,7 @@ function PaginationNumber({
     {
       "rounded-l-md": position === "first" || position === "single",
       "rounded-r-md": position === "last" || position === "single",
-      "z-10 bg-primary text-white border-primary": isActive,
+      "z-10 bg-red-300": isActive,
       "hover:bg-red-300": !isActive && position !== "middle",
       "text-gray-300": position === "middle",
     },

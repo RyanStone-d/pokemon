@@ -1,21 +1,32 @@
 import { BellAlertIcon, Cog6ToothIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { z } from "zod";
 
 import { Filter } from "./filter";
 import { Cards } from "./cards";
 import { Pagination } from "./pagination";
 import { fetchTotalPages } from "./fetchPokemon";
 
+const searchParamsSchema = z.object({
+  query: z.string().optional().default(""),
+  page: z.coerce.number().optional().default(1).catch(1),
+  type: z.string().optional().default("").catch(""),
+  generation: z.string().optional().default("").catch(""),
+});
+
 export default async function Page(props: {
   searchParams?: Promise<{
     query?: string;
     page?: string;
+    type?: string;
+    generation?: string;
   }>;
 }) {
   const searchParams = await props.searchParams;
-  const query = searchParams?.query || "";
-  const currentPage = searchParams?.page || "1";
-  const totalPages = await fetchTotalPages();
+  const { query, type, generation, page } =
+    searchParamsSchema.parse(searchParams);
+  const totalPages = await fetchTotalPages(type, generation);
+
   return (
     <main>
       <div className="flex justify-between items-center bg-overlay/80 py-6 px-4">
@@ -34,7 +45,7 @@ export default async function Page(props: {
       <div className="flex flex-col md:p-6">
         <Filter />
         <div className="my-[48px]">
-          <Cards currentPage={currentPage} />
+          <Cards currentPage={page} type={type} generation={generation} />
         </div>
         <div className="mt-6 flex items-center justify-between">
           <span className="text-sm text-red-300">
@@ -42,7 +53,7 @@ export default async function Page(props: {
             <strong className="text-white">{30}</strong> 隻寶可夢，共{" "}
             <strong className="text-white">150</strong> 隻寶可夢
           </span>
-          <Pagination totalPages={totalPages} />
+          <Pagination totalPages={totalPages} currentPage={page} />
         </div>
       </div>
     </main>

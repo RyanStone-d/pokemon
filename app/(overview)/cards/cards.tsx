@@ -2,32 +2,18 @@ import Image from "next/image";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 
 import { fetchPokemonList } from "../fetchPokemon";
+import { TYPE_COLOR_MAP } from "../pokemon-types";
 
-const TYPE_COLOR_MAP = {
-  normal: "#a8a878",
-  fire: "#f08030",
-  water: "#6890f0",
-  electric: "#f8d030",
-  grass: "#78c850",
-  ice: "#98d8d8",
-  fighting: "#c03028",
-  poison: "#a040a0",
-  ground: "#e0c068",
-  flying: "#a890f0",
-  psychic: "#f85888",
-  bug: "#a8b820",
-  rock: "#b8a038",
-  ghost: "#705898",
-  dragon: "#7038f8",
-  dark: "#705848",
-  steel: "#b8b8d0",
-  fairy: "#ee99ac",
-  stellar: "#4fa1ff",
-  shadow: "#6a2fb7",
-} as const;
-
-export default async function Cards({ currentPage }: { currentPage: string }) {
-  const pokemonList = await fetchPokemonList(Number(currentPage));
+export default async function Cards({
+  currentPage,
+  type,
+  generation,
+}: {
+  currentPage: number;
+  type: string;
+  generation: string;
+}) {
+  const pokemonList = await fetchPokemonList(currentPage, type, generation);
 
   return (
     <div className="grid grid-cols-5 gap-5">
@@ -70,6 +56,7 @@ function Card({
             alt={name}
             fill
             sizes="20vw"
+            loading="eager"
             className="object-contain p-3 transition-transform duration-300 hover:scale-105"
           />
         ) : (
