@@ -8,12 +8,19 @@ export default async function Cards({
   currentPage,
   type,
   generation,
+  query,
 }: {
   currentPage: number;
   type: string;
   generation: string;
+  query: string;
 }) {
-  const pokemonList = await fetchPokemonList(currentPage, type, generation);
+  const pokemonList = await fetchPokemonList(
+    currentPage,
+    type,
+    generation,
+    query,
+  );
 
   return (
     <div className="grid grid-cols-5 gap-5">

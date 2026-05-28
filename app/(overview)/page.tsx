@@ -25,7 +25,7 @@ export default async function Page(props: {
   const searchParams = await props.searchParams;
   const { query, type, generation, page } =
     searchParamsSchema.parse(searchParams);
-  const totalPages = await fetchTotalPages(type, generation);
+  const totalPages = await fetchTotalPages(type, generation, query);
 
   return (
     <main>
@@ -45,7 +45,12 @@ export default async function Page(props: {
       <div className="flex flex-col md:p-6">
         <Filter />
         <div className="my-[48px]">
-          <Cards currentPage={page} type={type} generation={generation} />
+          <Cards
+            currentPage={page}
+            type={type}
+            generation={generation}
+            query={query}
+          />
         </div>
         <div className="mt-6 flex items-center justify-between">
           <span className="text-sm text-red-300">

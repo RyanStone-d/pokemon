@@ -130,7 +130,11 @@ async function getGenerationUrls(generation: string) {
   }
 }
 
-async function getFilterList(type?: string, generation?: string) {
+async function getFilterList(
+  type?: string,
+  generation?: string,
+  query?: string,
+) {
   const [allRes, typeRes, genRes] = await Promise.all([
     getDefaultUrls(),
     type ? getPokemonTypeUrls(type) : Promise.resolve(null),
@@ -148,6 +152,13 @@ async function getFilterList(type?: string, generation?: string) {
     result = result.filter((item) => set.has(item.name));
   }
 
+  if (query) {
+    const lowerQuery = query.toLowerCase();
+    result = result.filter((item) =>
+      item.name.toLowerCase().includes(lowerQuery),
+    );
+  }
+
   return result;
 }
 
@@ -160,8 +171,9 @@ export async function fetchPokemonList(
   page: number,
   type?: string,
   generation?: string,
+  query?: string,
 ) {
-  const result = await getFilterList(type, generation);
+  const result = await getFilterList(type, generation, query);
   const list = offsetList(
     result.map((item) => item.url),
     page,
@@ -198,7 +210,11 @@ export async function fetchPokemonList(
   }
 }
 
-export async function fetchTotalPages(type?: string, generation?: string) {
-  const result = await getFilterList(type, generation);
+export async function fetchTotalPages(
+  type?: string,
+  generation?: string,
+  query?: string,
+) {
+  const result = await getFilterList(type, generation, query);
   return Math.ceil(result.length / LIMIT);
 }
