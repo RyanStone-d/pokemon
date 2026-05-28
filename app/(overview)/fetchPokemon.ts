@@ -54,14 +54,16 @@ const pokemonGenerationSchema = z.object({
   ),
 });
 
-const LIMIT = 10;
+const MAX_POKEMON = 1500;
+const LIMIT = 20;
 
-async function getDefaultUrls(page: number) {
-  const offset = (page - 1) * LIMIT;
-
+async function getDefaultUrls() {
   try {
     const response = await fetch(
-      `https://pokeapi.co/api/v2/pokemon?limit=${LIMIT}&offset=${offset}`,
+      `https://pokeapi.co/api/v2/pokemon?limit=${MAX_POKEMON}`,
+      {
+        next: { revalidate: 86400 },
+      },
     );
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -71,7 +73,7 @@ async function getDefaultUrls(page: number) {
       throw new Error(`Invalid API response: ${parsed.error.message}`);
     }
 
-    return parsed.data.results.map((pokemon) => pokemon.url);
+    return parsed.data.results;
   } catch (error) {
     console.error("Failed to fetch Pokemon data:", error);
     throw error;
@@ -92,9 +94,7 @@ async function getPokemonTypeUrls(type: string) {
       throw new Error(`Invalid API response: ${parsed.error.message}`);
     }
 
-    const list = parsed.data.pokemon.map((entry) => entry.pokemon.url);
-
-    return list;
+    return parsed.data.pokemon;
   } catch (error) {
     console.error("Failed to fetch Pokemon data:", error);
     throw error;
@@ -117,13 +117,11 @@ async function getGenerationUrls(generation: string) {
       throw new Error(`Invalid API response: ${parsed.error.message}`);
     }
 
-    const list = parsed.data.pokemon_species
-      .sort((a, b) => {
-        const idA = parseInt(a.url.split("/").filter(Boolean).at(-1) ?? "0");
-        const idB = parseInt(b.url.split("/").filter(Boolean).at(-1) ?? "0");
-        return idA - idB;
-      })
-      .map((entry) => entry.url);
+    const list = parsed.data.pokemon_species.sort((a, b) => {
+      const idA = parseInt(a.url.split("/").filter(Boolean).at(-1) ?? "0");
+      const idB = parseInt(b.url.split("/").filter(Boolean).at(-1) ?? "0");
+      return idA - idB;
+    });
 
     return list;
   } catch (error) {
@@ -132,45 +130,25 @@ async function getGenerationUrls(generation: string) {
   }
 }
 
-async function getCombinedUrls(type: string, generation: string) {
-  const [typeRes, generationRes] = await Promise.all([
-    fetch(`https://pokeapi.co/api/v2/type/${type}`),
-    fetch(`https://pokeapi.co/api/v2/generation/${generation}`),
+async function getFilterList(type?: string, generation?: string) {
+  const [allRes, typeRes, genRes] = await Promise.all([
+    getDefaultUrls(),
+    type ? getPokemonTypeUrls(type) : Promise.resolve(null),
+    generation ? getGenerationUrls(generation) : Promise.resolve(null),
   ]);
-  if (!typeRes.ok) {
-    throw new Error(`HTTP error! status: ${typeRes.status}`);
+  let result = allRes;
+
+  if (type) {
+    const set = new Set(typeRes!.map((item) => item.pokemon.name));
+    result = allRes.filter((item) => set.has(item.name));
   }
 
-  if (!generationRes.ok) {
-    throw new Error(`HTTP error! status: ${generationRes.status}`);
+  if (generation) {
+    const set = new Set(genRes!.map((item) => item.name));
+    result = result.filter((item) => set.has(item.name));
   }
 
-  const [typeJson, generationJson] = await Promise.all([
-    typeRes.json(),
-    generationRes.json(),
-  ]);
-
-  const typeParsed = pokemonTypeSchema.safeParse(typeJson);
-  const generationParsed = pokemonGenerationSchema.safeParse(generationJson);
-
-  if (!typeParsed.success) {
-    throw new Error(
-      `Invalid API response for type: ${typeParsed.error.message}`,
-    );
-  }
-
-  if (!generationParsed.success) {
-    throw new Error(`Invalid API response: ${generationParsed.error.message}`);
-  }
-
-  const set = new Set(
-    generationParsed.data.pokemon_species.map((entry) => entry.url),
-  );
-  const list = typeParsed.data.pokemon.filter((entry) =>
-    set.has(entry.pokemon.url),
-  );
-
-  return list.map((entry) => entry.pokemon.url);
+  return result;
 }
 
 function offsetList(list: string[], page: number) {
@@ -183,26 +161,18 @@ export async function fetchPokemonList(
   type?: string,
   generation?: string,
 ) {
-  let urls: string[];
+  const result = await getFilterList(type, generation);
+  const list = offsetList(
+    result.map((item) => item.url),
+    page,
+  );
 
-  if (type && generation) {
-    const list = await getCombinedUrls(type, generation);
-    urls = offsetList(list, page);
-  } else if (type) {
-    const list = await getPokemonTypeUrls(type);
-    urls = offsetList(list, page);
-  } else if (generation) {
-    const list = await getGenerationUrls(generation);
-    urls = offsetList(list, page);
-  } else {
-    urls = await getDefaultUrls(page);
-  }
-
-  console.log({ urls });
   try {
     const pokemonList = await Promise.all(
-      urls.map(async (url) => {
-        const detailRes = await fetch(url);
+      list.map(async (url) => {
+        const detailRes = await fetch(url, {
+          next: { revalidate: 3600 }, // 一小時更新一次
+        });
         const detailParsed = pokemonDetailSchema.safeParse(
           await detailRes.json(),
         );
@@ -229,30 +199,6 @@ export async function fetchPokemonList(
 }
 
 export async function fetchTotalPages(type?: string, generation?: string) {
-  if (type && generation) {
-    const list = await getCombinedUrls(type, generation);
-    return Math.ceil(list.length / LIMIT);
-  }
-
-  if (type) {
-    const list = await getPokemonTypeUrls(type);
-    return Math.ceil(list.length / LIMIT);
-  }
-
-  if (generation) {
-    const list = await getGenerationUrls(generation);
-    return Math.ceil(list.length / LIMIT);
-  }
-
-  const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=1`);
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-  const parsed = z
-    .object({ count: z.number() })
-    .safeParse(await response.json());
-  if (!parsed.success) {
-    throw new Error(`Invalid API response: ${parsed.error.message}`);
-  }
-  return Math.ceil(parsed.data.count / LIMIT);
+  const result = await getFilterList(type, generation);
+  return Math.ceil(result.length / LIMIT);
 }
