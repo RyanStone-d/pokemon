@@ -1,5 +1,7 @@
 import Image from "next/image";
+import Link from "next/link";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import { ViewTransition } from "react";
 
 import { fetchPokemonList } from "../fetchPokemon";
 import { TYPE_COLOR_MAP } from "../pokemon-types";
@@ -23,14 +25,17 @@ export default async function Cards({
   );
 
   return (
-    <div className="grid grid-cols-5 gap-5">
+    <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
       {pokemonList.map((pokemon) => (
-        <Card
-          key={pokemon.id}
-          name={pokemon.name}
-          types={pokemon.types}
-          image={pokemon.image}
-        />
+        <ViewTransition key={pokemon.id} name={`pokemon-card-${pokemon.id}`}>
+          <Link href={`/pokemon/${pokemon.id}`}>
+            <Card
+              name={pokemon.name}
+              types={pokemon.types}
+              image={pokemon.image}
+            />
+          </Link>
+        </ViewTransition>
       ))}
     </div>
   );
@@ -53,10 +58,10 @@ function Card({
 
   return (
     <div
-      className="flex flex-col p-4 gap-3 w-full aspect-[228/280] rounded-3xl"
+      className="flex flex-col lg:p-4 gap-3 w-full aspect-[228/280] rounded-3xl overflow-hidden"
       style={{ background }}
     >
-      <div className="relative flex-1 rounded-2xl overflow-hidden bg-white/10 hover:scale-105 transition-transform">
+      <div className="relative flex-1 lg:rounded-2xl overflow-hidden bg-white/10 hover:scale-105 transition-transform">
         {image ? (
           <Image
             src={image}
@@ -64,14 +69,16 @@ function Card({
             fill
             sizes="20vw"
             loading="eager"
-            className="object-contain p-3 transition-transform duration-300 hover:scale-105"
+            className="object-contain md:p-1 lg:p-3 transition-transform duration-300 hover:scale-105"
           />
         ) : (
           <QuestionMarkCircleIcon className="w-full h-full text-white/50 p-6" />
         )}
       </div>
-      <div className="flex flex-col items-center">
-        <span className="mt-6">{name}</span>
+      <div className="flex flex-col items-center justify-center min-h-[40px]">
+        <span className="text-sm font-medium  w-full text-center capitalize line-clamp-2">
+          {name}
+        </span>
       </div>
     </div>
   );

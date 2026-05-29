@@ -5,7 +5,7 @@ import { POKEMON_TYPES, GENERATIONS } from "../pokemon-types";
 export default function Filter() {
   return (
     <div className="bg-overlay/80 rounded p-6">
-      <div className="flex justify-between items-center gap-4 ">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 ">
         <RouteSelect name="type" label="Type" options={POKEMON_TYPES} />
         <RouteSelect
           name="generation"

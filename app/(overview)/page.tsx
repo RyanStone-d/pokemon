@@ -1,9 +1,10 @@
+import { Suspense } from "react";
 import { BellAlertIcon, Cog6ToothIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { z } from "zod";
 
 import { Filter } from "./filter";
-import { Cards } from "./cards";
+import { Cards, CardsSkeleton } from "./cards";
 import { Pagination } from "./pagination";
 import { fetchTotalPages } from "./fetchPokemon";
 
@@ -45,14 +46,19 @@ export default async function Page(props: {
       <div className="flex flex-col md:p-6">
         <Filter />
         <div className="my-[48px]">
-          <Cards
-            currentPage={page}
-            type={type}
-            generation={generation}
-            query={query}
-          />
+          <Suspense
+            key={`${query}-${type}-${generation}-${page}`}
+            fallback={<CardsSkeleton />}
+          >
+            <Cards
+              currentPage={page}
+              type={type}
+              generation={generation}
+              query={query}
+            />
+          </Suspense>
         </div>
-        <div className="mt-6 flex items-center justify-between">
+        <div className="my-6 flex gap-3 items-center flex-col md:flex-row md:justify-between">
           <span className="text-sm text-red-300">
             顯示NO. <strong className="text-white">{1}</strong> 到NO.
             <strong className="text-white">{30}</strong> 隻寶可夢，共{" "}

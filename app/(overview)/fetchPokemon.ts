@@ -28,6 +28,16 @@ const pokemonDetailSchema = z.object({
       type: z.object({ name: z.string() }),
     }),
   ),
+  stats: z.array(
+    z.object({
+      base_stat: z.number(),
+      effort: z.number(),
+      stat: z.object({
+        name: z.string(),
+        url: z.string().url(),
+      }),
+    }),
+  ),
 });
 
 const pokemonTypeSchema = z.object({
@@ -165,6 +175,30 @@ async function getFilterList(
 function offsetList(list: string[], page: number) {
   const offset = (page - 1) * LIMIT;
   return list.slice(offset, offset + LIMIT);
+}
+export async function fetchPokemonDetail(id: string) {
+  try {
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const parsed = pokemonDetailSchema.safeParse(await response.json());
+    if (!parsed.success) {
+      throw new Error(`Invalid API response: ${parsed.error.message}`);
+    }
+    return {
+      name: parsed.data.name,
+      id: parsed.data.id,
+      types: parsed.data.types.map((t) => t.type.name),
+      image: parsed.data.sprites.other["official-artwork"].front_default,
+      stats: Object.fromEntries(
+        parsed.data.stats.map((item) => [item.stat.name, item.base_stat]),
+      ),
+    };
+  } catch (e) {
+    console.error("Failed to fetch Pokemon detail:", e);
+    throw e;
+  }
 }
 
 export async function fetchPokemonList(

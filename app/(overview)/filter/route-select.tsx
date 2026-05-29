@@ -9,9 +9,11 @@ import {
   SelectValue,
 } from "@/design-system/select";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useOptimistic, useTransition } from "react";
 
 import { Field, FieldLabel } from "@/design-system/field";
 import { SelectOption } from "../pokemon-types";
+import { cn } from "@/lib/utils";
 
 type RouteSelectProps = Omit<
   React.ComponentProps<typeof SelectTrigger>,
@@ -34,28 +36,40 @@ export default function RouteSelect({
   const searchParams = useSearchParams();
   const { replace } = useRouter();
 
-  const handleSelect = (val: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", "1");
-    if (val === allOption) {
-      params.delete(name);
-    } else {
-      params.set(name, val);
-    }
-    replace(`${pathName}?${params.toString()}`);
-  };
-
   const rawValue = searchParams.get(name);
   const currentValue =
-    rawValue && options.find((item) => item.value === rawValue) ? rawValue : "";
+    rawValue && options.find((item) => item.value === rawValue)
+      ? rawValue
+      : allOption;
+
+  const [isPending, startTransition] = useTransition();
+  const [optimisticVal, setOptimisticVal] = useOptimistic(currentValue);
+
+  const handleSelect = (val: string) => {
+    startTransition(() => {
+      setOptimisticVal(val);
+
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("page", "1");
+      if (val === allOption) {
+        params.delete(name);
+      } else {
+        params.set(name, val);
+      }
+      replace(`${pathName}?${params.toString()}`, { scroll: false });
+    });
+  };
 
   return (
     <Field>
       <FieldLabel>{label}</FieldLabel>
-      <Select name={name} value={currentValue} onValueChange={handleSelect}>
+      <Select name={name} value={optimisticVal} onValueChange={handleSelect}>
         <SelectTrigger
-          className="w-[180px] rounded-md p-5 border-border-warm capitalize"
           {...props}
+          className={cn(
+            "w-[180px] rounded-md p-5 border-border-warm capitalize",
+            { "opacity-50": isPending },
+          )}
         >
           <SelectValue placeholder="Theme" />
         </SelectTrigger>

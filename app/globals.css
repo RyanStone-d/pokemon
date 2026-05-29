@@ -275,3 +275,12 @@
 @utility animate-slide-in {
   animation: slideInLeft 0.3s ease forwards;
 }
+
+::view-transition-old(pokemon-card-*),
+::view-transition-new(pokemon-card-*) {
+  /* 確保動畫期間維持原始比例 */
+  object-fit: contain;
+  /* 設定動畫持續時間與曲線 */
+  animation-duration: 0.5s;
+  animation-timing-function: ease-in-out;
+}
