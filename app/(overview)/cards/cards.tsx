@@ -21,7 +21,7 @@ function getPokemonUrl({
   const { query, page, type, generation } = searchParams;
   const search = new URLSearchParams();
   if (query) search.set("query", query);
-  if (page) search.set("page", page);
+  if (page) search.set("page", String(page));
   if (type) search.set("type", type);
   if (generation) search.set("generation", generation);
   return `${pathname}?${search.toString()}`;
