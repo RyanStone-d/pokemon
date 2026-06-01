@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useSearchParams, usePathname } from "next/navigation";
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";

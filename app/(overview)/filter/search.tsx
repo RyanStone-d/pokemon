@@ -9,6 +9,7 @@ export default function Search() {
   const searchParams = useSearchParams();
   const pathName = usePathname();
   const { replace } = useRouter();
+  const defaultQuery = searchParams.get("query") || "";
 
   const handleSearch = useDebouncedCallback((val: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -26,6 +27,7 @@ export default function Search() {
       <Field>
         <FieldLabel>Search</FieldLabel>
         <Input
+          defaultValue={defaultQuery}
           onChange={(e) => handleSearch(e.target.value)}
           placeholder="Search by name"
           className="rounded-sm p-5 border-none bg-[#6B7280]"

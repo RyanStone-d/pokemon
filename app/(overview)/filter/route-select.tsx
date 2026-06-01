@@ -12,7 +12,7 @@ import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { useOptimistic, useTransition } from "react";
 
 import { Field, FieldLabel } from "@/design-system/field";
-import { SelectOption } from "../pokemon-types";
+import { SelectOption } from "../pokemon-config";
 import { cn } from "@/lib/utils";
 
 type RouteSelectProps = Omit<

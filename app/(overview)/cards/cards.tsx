@@ -4,7 +4,28 @@ import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import { ViewTransition } from "react";
 
 import { fetchPokemonList } from "../fetchPokemon";
-import { TYPE_COLOR_MAP } from "../pokemon-types";
+import { getPokemonBackground } from "../pokemon-config";
+
+function getPokemonUrl({
+  pathname,
+  searchParams,
+}: {
+  pathname: string;
+  searchParams: {
+    query?: string;
+    page?: number;
+    type?: string;
+    generation?: string;
+  };
+}) {
+  const { query, page, type, generation } = searchParams;
+  const search = new URLSearchParams();
+  if (query) search.set("query", query);
+  if (page) search.set("page", page);
+  if (type) search.set("type", type);
+  if (generation) search.set("generation", generation);
+  return `${pathname}?${search.toString()}`;
+}
 
 export default async function Cards({
   currentPage,
@@ -28,7 +49,17 @@ export default async function Cards({
     <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
       {pokemonList.map((pokemon) => (
         <ViewTransition key={pokemon.id} name={`pokemon-card-${pokemon.id}`}>
-          <Link href={`/pokemon/${pokemon.id}`}>
+          <Link
+            href={getPokemonUrl({
+              pathname: `/pokemon/${pokemon.id}`,
+              searchParams: {
+                query,
+                page: currentPage,
+                type,
+                generation,
+              },
+            })}
+          >
             <Card
               name={pokemon.name}
               types={pokemon.types}
@@ -50,11 +81,7 @@ function Card({
   types: string[];
   image: string | null;
 }) {
-  const color1 = TYPE_COLOR_MAP[types[0] as keyof typeof TYPE_COLOR_MAP];
-  const color2 = TYPE_COLOR_MAP[types[1] as keyof typeof TYPE_COLOR_MAP];
-  const background = color2
-    ? `linear-gradient(to bottom, ${color1}, ${color2})`
-    : color1;
+  const background = getPokemonBackground(types);
 
   return (
     <div

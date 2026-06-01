@@ -1,6 +1,6 @@
 import RouteSelect from "./route-select";
 import Search from "./search";
-import { POKEMON_TYPES, GENERATIONS } from "../pokemon-types";
+import { POKEMON_TYPES, GENERATIONS } from "../pokemon-config";
 
 export default function Filter() {
   return (

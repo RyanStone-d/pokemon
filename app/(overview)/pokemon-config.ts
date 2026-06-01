@@ -44,3 +44,9 @@ export const GENERATIONS: SelectOption[] = [
   { label: "Gen VIII", value: "8" },
   { label: "Gen IX", value: "9" },
 ];
+
+export function getPokemonBackground(types: string[]): string {
+  const color1 = TYPE_COLOR_MAP[types[0] as PokemonType];
+  const color2 = TYPE_COLOR_MAP[types[1] as PokemonType];
+  return color2 ? `linear-gradient(to bottom, ${color1}, ${color2})` : color1;
+}

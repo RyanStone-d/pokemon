@@ -38,6 +38,8 @@ const pokemonDetailSchema = z.object({
       }),
     }),
   ),
+  weight: z.number(),
+  height: z.number(),
 });
 
 const pokemonTypeSchema = z.object({
@@ -176,30 +178,6 @@ function offsetList(list: string[], page: number) {
   const offset = (page - 1) * LIMIT;
   return list.slice(offset, offset + LIMIT);
 }
-export async function fetchPokemonDetail(id: string) {
-  try {
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const parsed = pokemonDetailSchema.safeParse(await response.json());
-    if (!parsed.success) {
-      throw new Error(`Invalid API response: ${parsed.error.message}`);
-    }
-    return {
-      name: parsed.data.name,
-      id: parsed.data.id,
-      types: parsed.data.types.map((t) => t.type.name),
-      image: parsed.data.sprites.other["official-artwork"].front_default,
-      stats: Object.fromEntries(
-        parsed.data.stats.map((item) => [item.stat.name, item.base_stat]),
-      ),
-    };
-  } catch (e) {
-    console.error("Failed to fetch Pokemon detail:", e);
-    throw e;
-  }
-}
 
 export async function fetchPokemonList(
   page: number,
@@ -251,4 +229,43 @@ export async function fetchTotalPages(
 ) {
   const result = await getFilterList(type, generation, query);
   return Math.ceil(result.length / LIMIT);
+}
+
+export async function fetchPokemonDetail(id: string) {
+  try {
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const parsed = pokemonDetailSchema.safeParse(await response.json());
+    if (!parsed.success) {
+      throw new Error(`Invalid API response: ${parsed.error.message}`);
+    }
+
+    const nameMap: Record<string, string> = {
+      hp: "HP",
+      attack: "Atk",
+      defense: "Def",
+      "special-attack": "SpA",
+      "special-defense": "SpD",
+      speed: "Spe",
+    };
+    return {
+      name: parsed.data.name,
+      id: parsed.data.id,
+      types: parsed.data.types.map((t) => t.type.name),
+      image: parsed.data.sprites.other["official-artwork"].front_default,
+      stats: parsed.data.stats.map((item) => ({
+        name: nameMap[item.stat.name],
+        val: item.base_stat,
+      })),
+      shape: {
+        weight: (+parsed.data.weight / 10).toFixed(1), // 換算為公斤
+        height: (+parsed.data.height / 10).toFixed(1), // 換算為公尺
+      },
+    };
+  } catch (e) {
+    console.error("Failed to fetch Pokemon detail:", e);
+    throw e;
+  }
 }
