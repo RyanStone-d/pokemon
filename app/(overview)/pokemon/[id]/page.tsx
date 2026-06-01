@@ -125,15 +125,19 @@ export default async function Page(props: {
           <div className="my-12 bg-overlay/80 rounded p-6 flex flex-col items-center w-full max-w-lg">
             <span className="mb-6">Base Stats</span>
             {editStats.map(({ name, val, color }) => (
-              <div key={name} className="w-full flex  gap-4 space-y-5">
-                <span className="w-10 shrink-0 text-sm">{name}</span>
+              <div
+                key={name}
+                className="w-full grid grid-cols-[2fr_8fr] gap-4 space-y-5"
+              >
+                <div className="text-sm flex justify-between">
+                  <div className="self-center">{name}：</div>
+                  <div className="self-center">{val}</div>
+                </div>
                 <div className="relative rounded bg-black h-[24px] w-full">
                   <div
                     style={{ width: `${(val / 255) * 100}%` }}
                     className={`absolute left-0 h-full rounded ${color} flex items-center justify-end`}
-                  >
-                    <div className="text-sm pr-2">{val} </div>
-                  </div>
+                  ></div>
                 </div>
               </div>
             ))}
