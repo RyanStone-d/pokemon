@@ -9,7 +9,8 @@ import {
   SelectValue,
 } from "@/design-system/select";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
-import { useOptimistic, useTransition } from "react";
+import { useTransition } from "react";
+import { useDebouncedCallback } from "use-debounce";
 
 import { Field, FieldLabel } from "@/design-system/field";
 import { SelectOption } from "../pokemon-config";
@@ -37,33 +38,34 @@ export default function RouteSelect({
   const { replace } = useRouter();
 
   const rawValue = searchParams.get(name);
-  const currentValue =
+  const defaultVal =
     rawValue && options.find((item) => item.value === rawValue)
       ? rawValue
       : allOption;
 
   const [isPending, startTransition] = useTransition();
-  const [optimisticVal, setOptimisticVal] = useOptimistic(currentValue);
 
-  const handleSelect = (val: string) => {
+  const handleSelect = useDebouncedCallback((val: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", "1");
+    if (val === allOption) {
+      params.delete(name);
+    } else {
+      params.set(name, val);
+    }
     startTransition(() => {
-      setOptimisticVal(val);
-
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("page", "1");
-      if (val === allOption) {
-        params.delete(name);
-      } else {
-        params.set(name, val);
-      }
       replace(`${pathName}?${params.toString()}`, { scroll: false });
     });
-  };
+  }, 500);
 
   return (
     <Field>
       <FieldLabel>{label}</FieldLabel>
-      <Select name={name} value={optimisticVal} onValueChange={handleSelect}>
+      <Select
+        name={name}
+        defaultValue={defaultVal}
+        onValueChange={handleSelect}
+      >
         <SelectTrigger
           {...props}
           className={cn(
