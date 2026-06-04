@@ -3,6 +3,7 @@
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { useSearchParams, usePathname } from "next/navigation";
 import Link from "next/link";
+import { use } from "react";
 
 import { cn } from "@/lib/utils";
 import { generatePagination } from "./generatePagination";
@@ -11,7 +12,7 @@ export default function Pagination({
   totalPages,
   currentPage,
 }: {
-  totalPages: number;
+  totalPages: Promise<number>;
   currentPage: number;
 }) {
   const pathName = usePathname();
@@ -23,7 +24,9 @@ export default function Pagination({
     return `${pathName}?${params.toString()}`;
   };
 
-  const allPages = generatePagination(currentPage, totalPages).map(
+  const totalPagesResolved = use(totalPages);
+
+  const allPages = generatePagination(currentPage, totalPagesResolved).map(
     (page, index, arr) => {
       let position: "first" | "last" | "middle" | "single" | undefined;
       if (index === 0) position = "first";
@@ -59,7 +62,7 @@ export default function Pagination({
       <PaginationArrow
         direction="right"
         href={createPageUrl(currentPage + 1)}
-        isDisabled={currentPage >= totalPages}
+        isDisabled={currentPage >= totalPagesResolved}
       />
     </div>
   );

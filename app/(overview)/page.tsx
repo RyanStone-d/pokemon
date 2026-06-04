@@ -26,7 +26,7 @@ export default async function Page(props: {
   const searchParams = await props.searchParams;
   const { query, type, generation, page } =
     searchParamsSchema.parse(searchParams);
-  const totalPages = await fetchTotalPages(type, generation, query);
+  const totalPagesPromise = fetchTotalPages(type, generation, query);
 
   return (
     <ViewTransition
@@ -77,7 +77,9 @@ export default async function Page(props: {
               <strong className="text-white">{30}</strong> 隻寶可夢，共{" "}
               <strong className="text-white">150</strong> 隻寶可夢
             </span>
-            <Pagination totalPages={totalPages} currentPage={page} />
+            <Suspense fallback={<div>...</div>}>
+              <Pagination totalPages={totalPagesPromise} currentPage={page} />
+            </Suspense>
           </div>
         </div>
       </main>
