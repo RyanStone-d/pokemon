@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { cache } from "react";
 
 const pokemonListSchema = z.object({
   count: z.number(),
@@ -142,37 +143,35 @@ async function getGenerationUrls(generation: string) {
   }
 }
 
-async function getFilterList(
-  type?: string,
-  generation?: string,
-  query?: string,
-) {
-  const [allRes, typeRes, genRes] = await Promise.all([
-    getDefaultUrls(),
-    type ? getPokemonTypeUrls(type) : Promise.resolve(null),
-    generation ? getGenerationUrls(generation) : Promise.resolve(null),
-  ]);
-  let result = allRes;
+const getFilterList = cache(
+  async (type?: string, generation?: string, query?: string) => {
+    const [allRes, typeRes, genRes] = await Promise.all([
+      getDefaultUrls(),
+      type ? getPokemonTypeUrls(type) : Promise.resolve(null),
+      generation ? getGenerationUrls(generation) : Promise.resolve(null),
+    ]);
+    let result = allRes;
 
-  if (type) {
-    const set = new Set(typeRes!.map((item) => item.pokemon.name));
-    result = allRes.filter((item) => set.has(item.name));
-  }
+    if (type) {
+      const set = new Set(typeRes!.map((item) => item.pokemon.name));
+      result = allRes.filter((item) => set.has(item.name));
+    }
 
-  if (generation) {
-    const set = new Set(genRes!.map((item) => item.name));
-    result = result.filter((item) => set.has(item.name));
-  }
+    if (generation) {
+      const set = new Set(genRes!.map((item) => item.name));
+      result = result.filter((item) => set.has(item.name));
+    }
 
-  if (query) {
-    const lowerQuery = query.toLowerCase();
-    result = result.filter((item) =>
-      item.name.toLowerCase().includes(lowerQuery),
-    );
-  }
+    if (query) {
+      const lowerQuery = query.toLowerCase();
+      result = result.filter((item) =>
+        item.name.toLowerCase().includes(lowerQuery),
+      );
+    }
 
-  return result;
-}
+    return result;
+  },
+);
 
 function offsetList(list: string[], page: number) {
   const offset = (page - 1) * LIMIT;

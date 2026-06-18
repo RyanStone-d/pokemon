@@ -8,6 +8,10 @@ import { Cards, CardsSkeleton } from "./cards";
 import { Pagination } from "./pagination";
 import { fetchTotalPages } from "./fetchPokemon";
 
+export async function generateStaticParams() {
+  return [{ query: "" }, { page: "1" }, { type: "" }, { generation: "" }];
+}
+
 const searchParamsSchema = z.object({
   query: z.string().optional().default(""),
   page: z.coerce.number().optional().default(1).catch(1),

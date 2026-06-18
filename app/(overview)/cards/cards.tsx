@@ -47,7 +47,7 @@ export default async function Cards({
 
   return (
     <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
-      {pokemonList.map((pokemon) => (
+      {pokemonList.map((pokemon, index) => (
         <ViewTransition key={pokemon.id} name={`pokemon-card-${pokemon.id}`}>
           <Link
             href={getPokemonUrl({
@@ -64,6 +64,7 @@ export default async function Cards({
               name={pokemon.name}
               types={pokemon.types}
               image={pokemon.image}
+              priority={index === 0}
             />
           </Link>
         </ViewTransition>
@@ -76,10 +77,12 @@ function Card({
   name,
   types,
   image,
+  priority,
 }: {
   name: string;
   types: string[];
   image: string | null;
+  priority?: boolean;
 }) {
   const background = getPokemonBackground(types);
 
@@ -95,7 +98,7 @@ function Card({
             alt={name}
             fill
             sizes="20vw"
-            loading="eager"
+            priority={priority}
             className="object-contain md:p-1 lg:p-3 transition-transform duration-300 hover:scale-105"
           />
         ) : (
