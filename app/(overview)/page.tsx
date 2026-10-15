@@ -6,7 +6,7 @@ import { z } from "zod";
 import { Filter } from "./filter";
 import { Cards, CardsSkeleton } from "./cards";
 import { Pagination } from "./pagination";
-import { fetchTotalPages } from "./fetchPokemon";
+import { fetchSummary, fetchTotalPages } from "./fetchPokemon";
 
 export async function generateStaticParams() {
   return [{ query: "" }, { page: "1" }, { type: "" }, { generation: "" }];
@@ -18,6 +18,28 @@ const searchParamsSchema = z.object({
   type: z.string().optional().default("").catch(""),
   generation: z.string().optional().default("").catch(""),
 });
+
+async function Summary({
+  page,
+  type,
+  generation,
+  query,
+}: {
+  page: number;
+  type: string;
+  generation: string;
+  query: string;
+}) {
+  const { from, to, total } = await fetchSummary(page, type, generation, query);
+
+  return (
+    <span className="text-sm text-red-300">
+      顯示NO. <strong className="text-white">{from}</strong> 到NO.
+      <strong className="text-white">{to}</strong> 隻寶可夢，共{" "}
+      <strong className="text-white">{total}</strong> 隻寶可夢
+    </span>
+  );
+}
 
 export default async function Page(props: {
   searchParams?: Promise<{
@@ -76,11 +98,14 @@ export default async function Page(props: {
             </Suspense>
           </div>
           <div className="my-6 flex gap-3 items-center flex-col md:flex-row md:justify-between">
-            <span className="text-sm text-red-300">
-              顯示NO. <strong className="text-white">{1}</strong> 到NO.
-              <strong className="text-white">{30}</strong> 隻寶可夢，共{" "}
-              <strong className="text-white">150</strong> 隻寶可夢
-            </span>
+            <Suspense fallback={<span />}>
+              <Summary
+                page={page}
+                type={type}
+                generation={generation}
+                query={query}
+              />
+            </Suspense>
             <Suspense fallback={<div>...</div>}>
               <Pagination totalPages={totalPagesPromise} currentPage={page} />
             </Suspense>

@@ -88,6 +88,22 @@ export async function fetchTotalPages(
   return totalPages;
 }
 
+// 「顯示 NO.x 到 NO.y，共 z 隻」用的數字。跟 Cards 打同一個網址，Next 會合併成一次請求
+export async function fetchSummary(
+  page: number,
+  type?: string,
+  generation?: string,
+  query?: string,
+) {
+  const list = await getList(page, type, generation, query);
+  const { total, perPage } = list;
+  return {
+    from: total === 0 ? 0 : (list.page - 1) * perPage + 1,
+    to: Math.min(list.page * perPage, total),
+    total,
+  };
+}
+
 export async function fetchPokemonDetail(id: string) {
   const p = await getJson(
     `/pokemon/${encodeURIComponent(id)}`,
