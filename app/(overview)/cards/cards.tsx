@@ -1,10 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
-import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import { ViewTransition } from "react";
 
-import { fetchPokemonList } from "../fetchPokemon";
-import { getPokemonBackground } from "../pokemon-config";
+import { fetchPokemonList } from "@/app/shared/pokemon";
+import { PokemonCard } from "@/app/shared/pokemon-card";
 
 function getPokemonUrl({
   pathname,
@@ -27,6 +25,7 @@ function getPokemonUrl({
   return `${pathname}?${search.toString()}`;
 }
 
+// 圖鑑首頁的卡片列表：每張卡連到詳細頁，並把目前的篩選條件帶過去，返回時才回得來
 export default async function Cards({
   currentPage,
   type,
@@ -60,7 +59,7 @@ export default async function Cards({
               },
             })}
           >
-            <Card
+            <PokemonCard
               name={pokemon.name}
               types={pokemon.types}
               image={pokemon.image}
@@ -69,47 +68,6 @@ export default async function Cards({
           </Link>
         </ViewTransition>
       ))}
-    </div>
-  );
-}
-
-function Card({
-  name,
-  types,
-  image,
-  priority,
-}: {
-  name: string;
-  types: string[];
-  image: string | null;
-  priority?: boolean;
-}) {
-  const background = getPokemonBackground(types);
-
-  return (
-    <div
-      className="flex flex-col lg:p-4 gap-3 w-full aspect-[228/280] rounded-3xl overflow-hidden"
-      style={{ background }}
-    >
-      <div className="relative flex-1 lg:rounded-2xl overflow-hidden bg-white/10 hover:scale-105 transition-transform">
-        {image ? (
-          <Image
-            src={image}
-            alt={name}
-            fill
-            sizes="20vw"
-            priority={priority}
-            className="object-contain md:p-1 lg:p-3 transition-transform duration-300 hover:scale-105"
-          />
-        ) : (
-          <QuestionMarkCircleIcon className="w-full h-full text-white/50 p-6" />
-        )}
-      </div>
-      <div className="flex flex-col items-center justify-center min-h-[40px]">
-        <span className="text-sm font-medium  w-full text-center capitalize line-clamp-2">
-          {name}
-        </span>
-      </div>
     </div>
   );
 }

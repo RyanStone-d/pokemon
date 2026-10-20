@@ -13,7 +13,7 @@ import { useTransition } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
 import { Field, FieldLabel } from "@/design-system/field";
-import { SelectOption } from "../pokemon-config";
+import { SelectOption } from "../pokemon";
 import { cn } from "@/lib/utils";
 
 type RouteSelectProps = Omit<

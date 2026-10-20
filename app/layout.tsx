@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { sora } from "./shared";
+import { sora } from "./shared/fonts";
 
 import "./globals.css";
 

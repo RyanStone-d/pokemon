@@ -6,14 +6,17 @@ import clsx from "clsx";
 
 import {
   ArrowPathIcon,
+  PlusCircleIcon,
   UserCircleIcon,
   ArchiveBoxIcon,
 } from "@heroicons/react/24/outline";
 
 const links = [
   { name: "Pokedex", href: "/", icon: ArchiveBoxIcon },
-  { name: "Profile", href: "/profile", icon: UserCircleIcon },
   { name: "Exchange", href: "/exchange", icon: ArrowPathIcon },
+  // 發交換單是登入者專屬，沒登入點進去會被導到 /profile
+  { name: "New Trade", href: "/exchange/new", icon: PlusCircleIcon },
+  { name: "Profile", href: "/profile", icon: UserCircleIcon },
 ];
 
 export default function NavLinks() {

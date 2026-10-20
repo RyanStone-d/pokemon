@@ -1,8 +1,8 @@
 import { z } from "zod";
+import { API_URL } from "../api";
 
-// 自己的 pokemon-api（Render + Neon），一次請求拿一整頁，不再一隻一隻打 PokeAPI
-const API_URL =
-  process.env.POKEMON_API_URL ?? "https://pokemon-api-3igu.onrender.com";
+// 自己的 pokemon-api（Render + Neon），一次請求拿一整頁，不再一隻一隻打 PokeAPI。
+// 網址跟交換單、登入共用 app/shared/api.ts 的 API_URL，環境變數改一處就好
 
 const pokemonListSchema = z.object({
   items: z.array(

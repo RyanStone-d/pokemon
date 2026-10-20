@@ -5,7 +5,15 @@ import { useDebouncedCallback } from "use-debounce";
 import { Input } from "@/design-system/input";
 import { Field, FieldLabel } from "@/design-system/field";
 
-export default function Search() {
+// 名字搜尋：打字後 500ms 把 query 寫進網址，頁面重新抓資料。
+// 圖鑑和交換列表共用，文案由外面傳
+export default function Search({
+  label = "Search",
+  placeholder = "Search by name",
+}: {
+  label?: string;
+  placeholder?: string;
+}) {
   const searchParams = useSearchParams();
   const pathName = usePathname();
   const { replace } = useRouter();
@@ -25,11 +33,11 @@ export default function Search() {
   return (
     <div>
       <Field>
-        <FieldLabel>Search</FieldLabel>
+        <FieldLabel>{label}</FieldLabel>
         <Input
           defaultValue={defaultQuery}
           onChange={(e) => handleSearch(e.target.value)}
-          placeholder="Search by name"
+          placeholder={placeholder}
           className="rounded-sm p-5 border-none bg-[#6B7280]"
         />
       </Field>

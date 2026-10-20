@@ -3,10 +3,10 @@ import { BellAlertIcon, Cog6ToothIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { z } from "zod";
 
-import { Filter } from "./filter";
+import { Filter } from "@/app/shared/filter";
 import { Cards, CardsSkeleton } from "./cards";
-import { Pagination } from "./pagination";
-import { fetchSummary, fetchTotalPages } from "./fetchPokemon";
+import { Pagination } from "@/app/shared/pagination";
+import { fetchSummary, fetchTotalPages } from "@/app/shared/pokemon";
 
 export async function generateStaticParams() {
   return [{ query: "" }, { page: "1" }, { type: "" }, { generation: "" }];

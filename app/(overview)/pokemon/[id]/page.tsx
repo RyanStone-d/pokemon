@@ -11,8 +11,8 @@ import {
   getPokemonBackground,
   TYPE_COLOR_MAP,
   type PokemonType,
-} from "@/app/(overview)/pokemon-config";
-import { fetchPokemonDetail } from "@/app/(overview)/fetchPokemon";
+} from "@/app/shared/pokemon";
+import { fetchPokemonDetail } from "@/app/shared/pokemon";
 
 export default async function Page(props: {
   params: Promise<{ id: string }>;

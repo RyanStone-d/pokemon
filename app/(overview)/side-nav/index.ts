@@ -1,1 +1,1 @@
-export { default as SideNav } from "./slide-nav";
+export { default as SideNav } from "./side-nav";
