@@ -1,1 +1,0 @@
-export { sora } from "./fonts";

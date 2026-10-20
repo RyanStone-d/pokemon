@@ -71,7 +71,7 @@ The application uses a **persistent left-side navigation bar**.
 │   NAV    │             Main Content                 │
 │          │                                          │
 │ Pokédex  │                                          │
-│ Trade    │                                          │
+│ Exchange │                                          │
 │ Profile  │                                          │
 │          │                                          │
 └──────────┴──────────────────────────────────────────┘
@@ -80,7 +80,7 @@ The application uses a **persistent left-side navigation bar**.
 | Section | Route      | Description                   |
 | ------- | ---------- | ----------------------------- |
 | Pokédex | `/pokedex` | Main library of Pokémon       |
-| Trade   | `/trade`   | Exchange hub                  |
+| Exchange | `/exchange` | NS Link Trade board         |
 | Profile | `/profile` | User information & collection |
 
 > **Note:** The Battle feature and top navigation bar were explicitly removed to simplify the user experience.
@@ -155,33 +155,70 @@ The application uses a **persistent left-side navigation bar**.
 
 ---
 
-### 4.C Global Trade Center
+### 4.C Exchange — NS Link Trade Board
 
-#### Layout
+> Replaces the earlier "Global Trade Center" (dual-column Your / Target Pokémon). That design assumed each account owns Pokémon inside the site. PokéNexus does **not** track ownership: the actual trade happens on the Nintendo Switch. The site is a bulletin board for Link Trade codes.
 
-- **Dual-column** interface
+#### Concept
+
+A trainer posts: "I offer **A**, I want **B**, my 8-digit link code is `XXXX-XXXX`". The code is hidden from the public list. Another logged-in trainer presses **Claim**; the post is locked to the two of them and the code is revealed to both. They meet in-game, trade, and the poster marks the post **Done** (or **Close** to withdraw).
+
+#### Routes
+
+| Route           | Who          | Content                                       |
+| --------------- | ------------ | --------------------------------------------- |
+| `/exchange`     | everyone     | Public list of open posts (card grid)         |
+| `/exchange/new` | logged in    | Create-post form                              |
+| `/profile`      | logged in    | Login / register; **My posts** & **My claims** |
+
+#### `/exchange` — list
 
 ```
-┌──────────────────────┬──────────────────────┐
-│   Your Pokémon       │   Target Pokémon      │
-│                      │                      │
-│  [Card] [Card] ...   │  [Card] [Card] ...   │
-│                      │                      │
-│  [Dropdown ▼]        │  [Dropdown ▼]        │
-│  [Search / Filter]   │  [Search / Filter]   │
-├──────────────────────┴──────────────────────┤
-│  Status: ● Connection Stable                │
-└─────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────┐
+│  Exchange                              [+ New post]    │
+├────────────────────────────────────────────────────────┤
+│  Search by Pokémon name (offered / wanted)             │
+├────────────────────────────────────────────────────────┤
+│ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐    │
+│ │ [A] ⇄ [B]│ │ [A] ⇄ [B]│ │ [A] ⇄ [B]│ │ [A] ⇄ [B]│    │
+│ │ Offered  │ │ Offered  │ │ Offered  │ │ Offered  │    │
+│ │  Wanted  │ │  Wanted  │ │  Wanted  │ │  Wanted  │    │
+│ │ @ryan 2h │ │ @mei  5h │ │ @ken  1d │ │ @yu   2d │    │
+│ │ [ Claim ]│ │ [ Claim ]│ │ [ Claim ]│ │ [ Claim ]│    │
+│ └──────────┘ └──────────┘ └──────────┘ └──────────┘    │
+└────────────────────────────────────────────────────────┘
 ```
 
-- Simplified trade cards: **Image + Name only**
-- Selection dropdowns for quick Pokémon matching
-- Search / filter buttons per column
-- Status indicator (e.g., `● Connection Stable`)
+- Same card grid as the Pokédex (type-color backgrounds reused for the two Pokémon artworks, `⇄` between them)
+- Card shows: offered Pokémon, wanted Pokémon, poster username, relative time, status badge
+- **Link code is never rendered in the list**
+- Search: by Pokémon name, matching either offered or wanted
+- Action button depends on the viewer:
+  - Not logged in → "Log in to claim" (links to `/profile`)
+  - Someone else's open post → **Claim**
+  - Own post → **Done** / **Close**, code visible
+  - Post I claimed → code visible
+
+#### `/exchange/new` — create post
+
+- Two Pokémon pickers (offered, wanted) reusing the Pokédex filter panel: **Type** and **Generation** dropdowns + name search, then click a card to select
+- Link code input: 8 digits, displayed as `XXXX-XXXX`
+- Submit → back to `/exchange`
+
+#### `/profile` — my trades
+
+- Two lists: **My posts** (with Done / Close buttons and the code) and **My claims** (with the code)
+
+#### Rules enforced by the API
+
+- Claim is atomic: two trainers claiming the same post at the same time → only one succeeds
+- Code is returned only to the poster and the claimer
+- Done / Close only by the poster (`403` otherwise)
 
 ---
-
 ### 4.D Trainer Profile
+
+> Phase 1 (lesson 9): username + password login / register only, plus **My posts** / **My claims** from 4.C. The editable fields below are a later phase.
 
 | Field         | Type          | Notes                        |
 | ------------- | ------------- | ---------------------------- |
@@ -221,8 +258,8 @@ The application uses a **persistent left-side navigation bar**.
 | `<FilterPanel>`    | Type / Generation / Personality filters + search |
 | `<DetailsOverlay>` | Full-screen fade-in detail view                  |
 | `<StatBar>`        | Animated progress bar for base stats             |
-| `<TradeColumn>`    | Single column in the trade interface             |
-| `<TradeStatus>`    | Connection status badge                          |
+| `<TradePostCard>`  | Offered ⇄ wanted card with claim / done button   |
+| `<PokemonPicker>`  | Filter panel + grid to pick one Pokémon          |
 | `<ProfileCard>`    | Editable trainer profile form                    |
 
 ---
@@ -250,11 +287,12 @@ app/
 │   └── [id]/
 │       └── page.tsx       ← Pokémon details overlay
 │
-├── trade/
-│   └── page.tsx           ← Global Trade Center
+├── exchange/
+│   ├── page.tsx           ← Link Trade board (list)
+│   └── new/page.tsx       ← Create post
 │
 ├── profile/
-│   └── page.tsx           ← Trainer profile
+│   └── page.tsx           ← Login / register, my posts, my claims
 │
 └── components/
     ├── NavSidebar.tsx
@@ -263,6 +301,7 @@ app/
     ├── FilterPanel.tsx
     ├── DetailsOverlay.tsx
     ├── StatBar.tsx
-    ├── TradeColumn.tsx
+    ├── TradePostCard.tsx
+    ├── PokemonPicker.tsx
     └── ProfileCard.tsx
 ```
