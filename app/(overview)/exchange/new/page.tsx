@@ -8,6 +8,7 @@ import { getCurrentUser } from "@/app/shared/auth";
 import { Filter } from "@/app/shared/filter";
 import { PokemonCardsSkeleton } from "@/app/shared/pokemon-card";
 import { fetchPokemonDetail } from "@/app/shared/pokemon";
+import { getDictionary } from "@/app/shared/i18n/server";
 import PickerSlot from "./picker-slot";
 import PickerCards, { type PickedPokemon } from "./picker-cards";
 import NewTradeForm from "./new-trade-form";
@@ -37,9 +38,10 @@ export default async function NewTradePage(props: {
   );
   const { step, offered, wanted, query, page, type, generation } = params;
 
-  const [offeredMon, wantedMon] = await Promise.all([
+  const [offeredMon, wantedMon, t] = await Promise.all([
     loadPokemon(offered),
     loadPokemon(wanted),
+    getDictionary(),
   ]);
 
   return (
@@ -48,27 +50,28 @@ export default async function NewTradePage(props: {
         <div className="flex items-center gap-3">
           <Link
             href="/exchange"
-            title="回交換列表"
+            title={t.newTrade.back}
             className="rounded-md p-2 hover:bg-surface-hover"
           >
             <ArrowLeftIcon className="w-6 h-6" />
           </Link>
-          <h1 className="text-xl md:text-2xl">發交換單</h1>
+          <h1 className="text-xl md:text-2xl">{t.newTrade.title}</h1>
         </div>
-        <span className="text-sm text-muted">@{user.username}</span>
       </div>
 
       <div className="flex flex-col gap-6 p-4 md:p-6">
         <section className="flex flex-col gap-4 bg-overlay/80 rounded p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <PickerSlot
-              label="我拿出"
+              label={t.newTrade.offered}
+              placeholder={t.newTrade.pick}
               active={step === "offered"}
               pokemon={offeredMon}
               href={newTradeUrl(params, { step: "offered" })}
             />
             <PickerSlot
-              label="我想要"
+              label={t.newTrade.wanted}
+              placeholder={t.newTrade.pick}
               active={step === "wanted"}
               pokemon={wantedMon}
               href={newTradeUrl(params, { step: "wanted" })}
@@ -76,10 +79,6 @@ export default async function NewTradePage(props: {
           </div>
           <NewTradeForm offeredId={offeredMon?.id} wantedId={wantedMon?.id} />
         </section>
-
-        <p className="text-sm text-muted">
-          正在選「{step === "offered" ? "我拿出" : "我想要"}」的寶可夢：用篩選找到後，點卡片就選好了
-        </p>
 
         <Filter />
 
@@ -99,7 +98,12 @@ async function loadPokemon(id?: number): Promise<PickedPokemon | null> {
   if (!id) return null;
   try {
     const p = await fetchPokemonDetail(String(id));
-    return { id: p.id, name: p.name, image: p.image, types: p.types };
+    return {
+      id: p.id,
+      name: p.name,
+      image: p.image,
+      types: p.types.map((t) => t.code),
+    };
   } catch {
     return null;
   }

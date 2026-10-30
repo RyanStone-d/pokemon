@@ -11,6 +11,12 @@ export type ApiResult<T> =
   | { ok: true; status: number; data: T }
   | { ok: false; status: number; error: string };
 
+// API 的錯誤是 { error: 代碼, message: 中文 }，代碼給程式判斷，畫面顯示 message
+const errorBodySchema = z.object({
+  error: z.string(),
+  message: z.string(),
+});
+
 // 回 ok / error 而不是直接 throw，讓畫面可以在原地顯示錯誤，不用整頁炸掉
 export async function apiFetch<T>(
   path: string,
@@ -27,8 +33,8 @@ export async function apiFetch<T>(
     schema?: z.ZodType<T>;
   } = {},
 ): Promise<ApiResult<T>> {
-  // MOCK_API=true：API 還沒做好前，用記憶體裡的假資料走完整個流程
-  if (isMockApi()) {
+  // MOCK_API=true：還沒做好的 /trades 用記憶體裡的假資料
+  if (isMockApi(path)) {
     const reply = await mockApi({ method, path, body, token });
     return toResult(path, reply.status, reply.json, schema);
   }
@@ -62,14 +68,9 @@ function toResult<T>(
   schema?: z.ZodType<T>,
 ): ApiResult<T> {
   if (status < 200 || status >= 300) {
-    const message =
-      typeof json === "object" &&
-      json !== null &&
-      "error" in json &&
-      typeof json.error === "string"
-        ? json.error
-        : `HTTP ${status}`;
-    return { ok: false, status, error: message };
+    const parsed = errorBodySchema.safeParse(json);
+    if (!parsed.success) return { ok: false, status, error: `HTTP ${status}` };
+    return { ok: false, status, error: parsed.data.message };
   }
 
   if (schema) {

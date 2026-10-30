@@ -11,23 +11,27 @@ import {
   ArchiveBoxIcon,
 } from "@heroicons/react/24/outline";
 
+import { useDictionary } from "@/app/shared/i18n";
+
+// key 對到字典的 nav
 const links = [
-  { name: "Pokedex", href: "/", icon: ArchiveBoxIcon },
-  { name: "Exchange", href: "/exchange", icon: ArrowPathIcon },
+  { key: "pokedex", href: "/", icon: ArchiveBoxIcon },
+  { key: "exchange", href: "/exchange", icon: ArrowPathIcon },
   // 發交換單是登入者專屬，沒登入點進去會被導到 /profile
-  { name: "New Trade", href: "/exchange/new", icon: PlusCircleIcon },
-  { name: "Profile", href: "/profile", icon: UserCircleIcon },
-];
+  { key: "newTrade", href: "/exchange/new", icon: PlusCircleIcon },
+  { key: "profile", href: "/profile", icon: UserCircleIcon },
+] as const;
 
 export default function NavLinks() {
   const pathname = usePathname();
+  const t = useDictionary();
   return (
     <>
       {links.map((link) => (
         <Link
-          key={link.name}
+          key={link.key}
           href={link.href}
-          title={link.name}
+          title={t.nav[link.key]}
           className={clsx(
             "flex items-center gap-5 p-4 hover:bg-red-300 rounded",
             {
@@ -36,7 +40,7 @@ export default function NavLinks() {
           )}
         >
           <link.icon className="w-6 h-6" />
-          <p className="hidden md:block">{link.name}</p>
+          <p className="hidden md:block">{t.nav[link.key]}</p>
         </Link>
       ))}
     </>

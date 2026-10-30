@@ -1,8 +1,12 @@
 import { z } from "zod";
 import { API_URL } from "../api";
+import { getLocale } from "../i18n/server";
 
 // 自己的 pokemon-api（Render + Neon），一次請求拿一整頁，不再一隻一隻打 PokeAPI。
 // 網址跟交換單、登入共用 app/shared/api.ts 的 API_URL，環境變數改一處就好
+
+// code 不分語系（fire），拿來對顏色、當篩選參數；name 是畫面上顯示的名字（火）
+const typeSchema = z.object({ code: z.string(), name: z.string() });
 
 const pokemonListSchema = z.object({
   items: z.array(
@@ -10,7 +14,7 @@ const pokemonListSchema = z.object({
       id: z.number(),
       name: z.string(),
       image: z.string().url().nullable(),
-      types: z.array(z.string()),
+      types: z.array(typeSchema),
     }),
   ),
   page: z.number(),
@@ -25,7 +29,7 @@ const pokemonDetailSchema = z.object({
   image: z.string().url().nullable(),
   height: z.number(),
   weight: z.number(),
-  types: z.array(z.string()),
+  types: z.array(typeSchema),
   stats: z.object({
     hp: z.number(),
     attack: z.number(),
@@ -37,9 +41,17 @@ const pokemonDetailSchema = z.object({
   generation: z.number(),
 });
 
+// 屬性、世代下拉選單用。屬性用 code 篩選、世代用 id 篩選，跟 /pokemon 的參數一樣
+const typeListSchema = z.array(typeSchema);
+const generationListSchema = z.array(z.object({ id: z.number(), name: z.string() }));
+
+// 每個請求都帶 lang，名字、屬性、世代由 API 依語系回傳。
+// lang 在網址上，Next 的快取也會依語系分開存，不會拿到別的語系
 async function getJson<T>(path: string, schema: z.ZodType<T>): Promise<T> {
+  const url = new URL(path, API_URL);
+  url.searchParams.set("lang", await getLocale());
   try {
-    const response = await fetch(`${API_URL}${path}`, {
+    const response = await fetch(url, {
       next: { revalidate: 3600 }, // 一小時更新一次
     });
     if (!response.ok) {
@@ -76,7 +88,8 @@ export async function fetchPokemonList(
   query?: string,
 ) {
   const { items } = await getList(page, type, generation, query);
-  return items;
+  // 卡片只用屬性決定背景色，給代碼就好
+  return items.map((p) => ({ ...p, types: p.types.map((t) => t.code) }));
 }
 
 export async function fetchTotalPages(
@@ -104,6 +117,14 @@ export async function fetchSummary(
   };
 }
 
+export function fetchTypes() {
+  return getJson("/types", typeListSchema);
+}
+
+export function fetchGenerations() {
+  return getJson("/generations", generationListSchema);
+}
+
 export async function fetchPokemonDetail(id: string) {
   const p = await getJson(
     `/pokemon/${encodeURIComponent(id)}`,
@@ -115,14 +136,10 @@ export async function fetchPokemonDetail(id: string) {
     id: p.id,
     types: p.types,
     image: p.image,
-    stats: [
-      { name: "HP", val: p.stats.hp },
-      { name: "Atk", val: p.stats.attack },
-      { name: "Def", val: p.stats.defense },
-      { name: "SpA", val: p.stats.spAtk },
-      { name: "SpD", val: p.stats.spDef },
-      { name: "Spe", val: p.stats.speed },
-    ],
+    // key 跟 API 的欄位一樣，畫面上的名字在字典的 pokemon.stats
+    stats: (["hp", "attack", "defense", "spAtk", "spDef", "speed"] as const).map(
+      (key) => ({ key, val: p.stats[key] }),
+    ),
     shape: {
       weight: p.weight.toFixed(1), // 公斤，API 已經換算好
       height: p.height.toFixed(1), // 公尺

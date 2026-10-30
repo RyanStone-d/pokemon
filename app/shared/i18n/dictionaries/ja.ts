@@ -1,0 +1,127 @@
+import type { Dictionary } from "./zh-Hant";
+
+// 能力值、連線密語（あいことば）都用日版遊戲裡的寫法
+const ja: Dictionary = {
+  meta: {
+    description: "ポケモン図鑑を見て、ほかのトレーナーとポケモンを交換しよう。",
+  },
+  common: {
+    all: "すべて",
+    processing: "処理中…",
+    retry: "もう一度試す",
+  },
+  language: {
+    label: "言語",
+  },
+  nav: {
+    pokedex: "図鑑",
+    exchange: "交換",
+    newTrade: "交換を募集",
+    profile: "マイページ",
+    home: "図鑑に戻る",
+    guest: "未ログイン",
+    signIn: "ログイン",
+    signOut: "ログアウト",
+    signingOut: "ログアウト中…",
+  },
+  filter: {
+    type: "タイプ",
+    generation: "世代",
+    search: "検索",
+    searchPlaceholder: "英語名で検索（例：pikachu）",
+  },
+  pokedex: {
+    title: "図鑑",
+    notifications: "お知らせ",
+    summary: "全 {total} 匹中 {from}〜{to} 匹目を表示",
+  },
+  pokemon: {
+    back: "図鑑に戻る",
+    baseStats: "種族値",
+    stats: {
+      hp: "HP",
+      attack: "こうげき",
+      defense: "ぼうぎょ",
+      spAtk: "とくこう",
+      spDef: "とくぼう",
+      speed: "すばやさ",
+    },
+  },
+  exchange: {
+    title: "交換",
+    error: "交換ページでエラーが発生しました",
+    sideTabs: "交換の見方",
+    sides: {
+      want: { label: "ほしい", searchLabel: "ほしいポケモン" },
+      offer: { label: "出せる", searchLabel: "出せるポケモン" },
+    },
+    status: {
+      open: "募集中",
+      claimed: "成立",
+      completed: "完了",
+      cancelled: "取り下げ",
+    },
+    justNow: "たった今",
+    swap: "交換",
+    you: "あなた",
+    claimedBy: "{name} が応募済み",
+    linkCode: "あいことば",
+    signInToTrade: "ログインして交換",
+    claim: "交換する",
+    complete: "交換した",
+    cancel: "取り下げる",
+    noMatch: "条件に合う交換募集はありません",
+    noOpen: "募集中の交換はまだありません",
+    summary: "全 {total} 件中 {from}〜{to} 件目を表示",
+    errors: {
+      pickBoth: "出すポケモンとほしいポケモンを両方選んでください",
+      samePokemon: "出すポケモンとほしいポケモンが同じです",
+      linkCode: "あいことばは数字 8 桁です",
+    },
+  },
+  newTrade: {
+    title: "交換を募集",
+    back: "交換一覧に戻る",
+    offered: "出せる",
+    wanted: "ほしい",
+    pick: "タップして選ぶ",
+    linkCodeLabel: "あいことば（8 桁）",
+    submit: "投稿",
+    pickFirst: "先にポケモンを 2 匹選んでください",
+    hint: "ポケモンを 2 匹選んで、あいことばを入れると投稿できます",
+    noPokemon: "ポケモンが見つかりません",
+  },
+  profile: {
+    title: "マイページ",
+    error: "マイページでエラーが発生しました",
+    myPosts: "自分の募集",
+    noPosts: "まだ交換を募集していません",
+    myClaims: "応募した交換",
+    noClaims: "まだ交換に応募していません",
+    claimedNotice:
+      "交換成立！募集 {id} に応募しました：{pair}{linkCode}。ゲームであいことばを入れると @{creator} さんと交換できます。",
+    claimedLinkCode: "、あいことば {code}",
+    viewTrade: "この募集を見る",
+  },
+  auth: {
+    tabs: "ログインまたは新規登録",
+    login: "ログイン",
+    register: "新規登録",
+    registerSubmit: "登録してログイン",
+    username: "ユーザー名",
+    usernamePlaceholder: "ユーザー名（英数字と _ で 3〜20 文字）",
+    password: "パスワード",
+    passwordPlaceholder: "パスワード（8 文字以上）",
+    or: "または",
+    google: "Google で続ける",
+    facebook: "Facebook で続ける",
+    comingSoon: "準備中",
+    errors: {
+      missingCredentials: "ユーザー名とパスワードを入力してください",
+      invalidUsername: "ユーザー名は英数字とアンダースコアで 3〜20 文字です",
+      passwordTooShort: "パスワードは {min} 文字以上にしてください",
+    },
+  },
+};
+
+export default ja;

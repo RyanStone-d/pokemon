@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { z } from "zod";
 
 import { getCurrentUser } from "@/app/shared/auth";
+import { getDictionary } from "@/app/shared/i18n/server";
 import AuthPanel from "./auth-panel";
 import MyTrades from "./my-trades";
 import MyTradesSkeleton from "./my-trades-skeleton";
@@ -16,13 +17,13 @@ const searchParamsSchema = z.object({
 export default async function ProfilePage(props: {
   searchParams?: Promise<{ claimed?: string }>;
 }) {
-  const user = await getCurrentUser();
+  const [user, t] = await Promise.all([getCurrentUser(), getDictionary()]);
   const { claimed } = searchParamsSchema.parse((await props.searchParams) ?? {});
 
   return (
     <main className="flex flex-col min-h-full">
       <div className="flex justify-between items-center bg-overlay/80 py-6 px-4">
-        <h1 className="text-xl md:text-2xl">Profile</h1>
+        <h1 className="text-xl md:text-2xl">{t.profile.title}</h1>
       </div>
 
       {user ? (

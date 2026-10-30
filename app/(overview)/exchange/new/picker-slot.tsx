@@ -9,11 +9,14 @@ import type { PickedPokemon } from "./picker-cards";
 // 上方的兩格：我拿出 / 我想要。點了會切換現在在選哪一格
 export default function PickerSlot({
   label,
+  placeholder,
   active,
   pokemon,
   href,
 }: {
   label: string;
+  // 還沒選的時候顯示的字
+  placeholder: string;
   active: boolean;
   pokemon: PickedPokemon | null;
   href: string;
@@ -51,7 +54,7 @@ export default function PickerSlot({
       </div>
       <div className="flex flex-col">
         <span className="text-sm text-muted">{label}</span>
-        <span className="capitalize">{pokemon?.name ?? "點這裡選"}</span>
+        <span className="capitalize">{pokemon?.name ?? placeholder}</span>
       </div>
     </Link>
   );

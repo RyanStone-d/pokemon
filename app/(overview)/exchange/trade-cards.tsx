@@ -1,5 +1,7 @@
 import type { User } from "@/app/shared/auth";
 import { Pagination } from "@/app/shared/pagination";
+import { formatNodes } from "@/app/shared/i18n";
+import { getDictionary } from "@/app/shared/i18n/server";
 import { fetchTrades } from "./fetchTrades";
 import type { TradeSide } from "./trade-side";
 import TradeCard from "./trade-card";
@@ -20,7 +22,10 @@ export default async function TradeCards({
   generation: string;
   user: User | null;
 }) {
-  const res = await fetchTrades({ side, page, query, type, generation });
+  const [res, t] = await Promise.all([
+    fetchTrades({ side, page, query, type, generation }),
+    getDictionary(),
+  ]);
 
   if (!res.ok) {
     return (
@@ -36,9 +41,7 @@ export default async function TradeCards({
   if (items.length === 0) {
     return (
       <p className="text-sm text-red-300">
-        {query || type || generation
-          ? "沒有符合條件的交換單"
-          : "目前沒有開放中的交換單"}
+        {query || type || generation ? t.exchange.noMatch : t.exchange.noOpen}
       </p>
     );
   }
@@ -55,9 +58,11 @@ export default async function TradeCards({
       </div>
       <div className="my-6 flex gap-3 items-center flex-col md:flex-row md:justify-between">
         <span className="text-sm text-red-300">
-          顯示第 <strong className="text-white">{from}</strong> 到{" "}
-          <strong className="text-white">{to}</strong> 張，共{" "}
-          <strong className="text-white">{total}</strong> 張開放中
+          {formatNodes(t.exchange.summary, {
+            from: <strong className="text-white">{from}</strong>,
+            to: <strong className="text-white">{to}</strong>,
+            total: <strong className="text-white">{total}</strong>,
+          })}
         </span>
         <Pagination
           totalPages={Promise.resolve(totalPages)}

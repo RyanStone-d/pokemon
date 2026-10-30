@@ -1,0 +1,127 @@
+// 繁中是基準：其他語系的型別從這份推出來，少一個 key TypeScript 就會報錯。
+// {name} 是要代入的值，用 formatMessage / formatNodes 換掉
+const zhHant = {
+  meta: {
+    description: "瀏覽寶可夢圖鑑，和其他訓練家交換寶可夢。",
+  },
+  common: {
+    all: "全部",
+    processing: "處理中…",
+    retry: "再試一次",
+  },
+  language: {
+    label: "語言",
+  },
+  nav: {
+    pokedex: "圖鑑",
+    exchange: "交換",
+    newTrade: "發交換單",
+    profile: "個人頁",
+    home: "回圖鑑",
+    guest: "未登入",
+    signIn: "登入",
+    signOut: "登出",
+    signingOut: "登出中…",
+  },
+  filter: {
+    type: "屬性",
+    generation: "世代",
+    search: "搜尋",
+    searchPlaceholder: "輸入英文名字，例如 pikachu",
+  },
+  pokedex: {
+    title: "圖鑑",
+    notifications: "通知",
+    summary: "顯示第 {from} 到 {to} 隻，共 {total} 隻寶可夢",
+  },
+  pokemon: {
+    back: "回圖鑑",
+    baseStats: "基礎能力值",
+    stats: {
+      hp: "HP",
+      attack: "攻擊",
+      defense: "防禦",
+      spAtk: "特攻",
+      spDef: "特防",
+      speed: "速度",
+    },
+  },
+  exchange: {
+    title: "交換",
+    error: "交換區出了點問題",
+    sideTabs: "交換視角",
+    sides: {
+      want: { label: "我想要", searchLabel: "我想要的寶可夢" },
+      offer: { label: "我拿出", searchLabel: "我拿出的寶可夢" },
+    },
+    status: {
+      open: "等待交換",
+      claimed: "已配對",
+      completed: "已完成",
+      cancelled: "已下架",
+    },
+    justNow: "剛剛",
+    swap: "交換",
+    you: "你",
+    claimedBy: "已由 {name} 認領",
+    linkCode: "連線密語",
+    signInToTrade: "登入後交換",
+    claim: "我要交換",
+    complete: "換完了",
+    cancel: "下架",
+    noMatch: "沒有符合條件的交換單",
+    noOpen: "目前沒有開放中的交換單",
+    summary: "顯示第 {from} 到 {to} 張，共 {total} 張開放中",
+    errors: {
+      pickBoth: "拿出和想要的寶可夢都要選",
+      samePokemon: "拿出和想要的不能是同一隻",
+      linkCode: "連線密語要 8 個數字",
+    },
+  },
+  newTrade: {
+    title: "發交換單",
+    back: "回交換列表",
+    offered: "我拿出",
+    wanted: "我想要",
+    pick: "點這裡選",
+    linkCodeLabel: "連線密語（8 碼）",
+    submit: "發文",
+    pickFirst: "先選好兩隻寶可夢",
+    hint: "選好兩隻寶可夢，填好密語就能發文",
+    noPokemon: "找不到符合的寶可夢",
+  },
+  profile: {
+    title: "個人頁",
+    error: "個人頁出了點問題",
+    myPosts: "我發的單",
+    noPosts: "還沒發過交換單",
+    myClaims: "我認領的單",
+    noClaims: "還沒認領過交換單",
+    claimedNotice:
+      "配對成功！你剛認領了交換單 {id}：{pair}{linkCode}。到遊戲裡輸入密語，就能和 @{creator} 交換。",
+    claimedLinkCode: "，連線密語 {code}",
+    viewTrade: "看這張單",
+  },
+  auth: {
+    tabs: "登入或註冊",
+    login: "登入",
+    register: "註冊",
+    registerSubmit: "註冊並登入",
+    username: "帳號",
+    usernamePlaceholder: "帳號（3–20 個英文、數字或 _）",
+    password: "密碼",
+    passwordPlaceholder: "密碼（至少 8 個字）",
+    or: "或使用",
+    google: "使用 Google 繼續",
+    facebook: "使用 Facebook 繼續",
+    comingSoon: "尚未開放",
+    errors: {
+      missingCredentials: "請輸入帳號和密碼",
+      invalidUsername: "帳號要 3–20 個字，只能用英文、數字或底線",
+      passwordTooShort: "密碼至少 {min} 個字",
+    },
+  },
+};
+
+export type Dictionary = typeof zhHant;
+export default zhHant;

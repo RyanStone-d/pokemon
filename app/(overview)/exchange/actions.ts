@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { apiFetch } from "@/app/shared/api";
 import { getToken } from "@/app/shared/auth";
+import { getDictionary } from "@/app/shared/i18n/server";
 import { tradeSchema } from "./fetchTrades";
 import { isValidLinkCode, normalizeLinkCode } from "./trade-utils";
 
@@ -28,9 +29,11 @@ export async function createTrade(
   const wanted = Number(formData.get("wanted"));
   const linkCode = normalizeLinkCode(String(formData.get("linkCode") ?? ""));
 
-  if (!offered || !wanted) return { error: "拿出和想要的寶可夢都要選" };
-  if (offered === wanted) return { error: "拿出和想要的不能是同一隻" };
-  if (!isValidLinkCode(linkCode)) return { error: "連線密語要 8 個數字" };
+  // 語系在 cookie，Server Action 也讀得到
+  const { errors } = (await getDictionary()).exchange;
+  if (!offered || !wanted) return { error: errors.pickBoth };
+  if (offered === wanted) return { error: errors.samePokemon };
+  if (!isValidLinkCode(linkCode)) return { error: errors.linkCode };
 
   const res = await apiFetch("/trades", {
     method: "POST",

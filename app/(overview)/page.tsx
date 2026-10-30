@@ -1,12 +1,13 @@
 import { Suspense, ViewTransition } from "react";
-import { BellAlertIcon, Cog6ToothIcon } from "@heroicons/react/24/outline";
-import Link from "next/link";
+import { BellAlertIcon } from "@heroicons/react/24/outline";
 import { z } from "zod";
 
 import { Filter } from "@/app/shared/filter";
 import { Cards, CardsSkeleton } from "./cards";
 import { Pagination } from "@/app/shared/pagination";
 import { fetchSummary, fetchTotalPages } from "@/app/shared/pokemon";
+import { formatNodes } from "@/app/shared/i18n";
+import { getDictionary } from "@/app/shared/i18n/server";
 
 export async function generateStaticParams() {
   return [{ query: "" }, { page: "1" }, { type: "" }, { generation: "" }];
@@ -30,13 +31,18 @@ async function Summary({
   generation: string;
   query: string;
 }) {
-  const { from, to, total } = await fetchSummary(page, type, generation, query);
+  const [{ from, to, total }, t] = await Promise.all([
+    fetchSummary(page, type, generation, query),
+    getDictionary(),
+  ]);
 
   return (
     <span className="text-sm text-red-300">
-      顯示NO. <strong className="text-white">{from}</strong> 到NO.
-      <strong className="text-white">{to}</strong> 隻寶可夢，共{" "}
-      <strong className="text-white">{total}</strong> 隻寶可夢
+      {formatNodes(t.pokedex.summary, {
+        from: <strong className="text-white">{from}</strong>,
+        to: <strong className="text-white">{to}</strong>,
+        total: <strong className="text-white">{total}</strong>,
+      })}
     </span>
   );
 }
@@ -53,6 +59,7 @@ export default async function Page(props: {
   const { query, type, generation, page } =
     searchParamsSchema.parse(searchParams);
   const totalPagesPromise = fetchTotalPages(type, generation, query);
+  const t = await getDictionary();
 
   return (
     <ViewTransition
@@ -70,16 +77,11 @@ export default async function Page(props: {
     >
       <main>
         <div className="flex justify-between items-center bg-overlay/80 py-6 px-4">
-          <h1 className="text-xl md:text-2xl">Pokedex</h1>
-          <div className="flex gap-4">
-            <button type="button">
-              <BellAlertIcon className="w-6 h-6" />
-            </button>
-
-            <Link href="/settings">
-              <Cog6ToothIcon className="w-6 h-6" />
-            </Link>
-          </div>
+          <h1 className="text-xl md:text-2xl">{t.pokedex.title}</h1>
+          {/* 通知還沒做，先佔位 */}
+          <button type="button" aria-label={t.pokedex.notifications}>
+            <BellAlertIcon className="w-6 h-6" />
+          </button>
         </div>
 
         <div className="flex flex-col md:p-6">

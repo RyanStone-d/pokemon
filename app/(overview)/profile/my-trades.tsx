@@ -1,4 +1,6 @@
 import type { User } from "@/app/shared/auth";
+import { formatNodes, type Dictionary } from "@/app/shared/i18n";
+import { getDictionary } from "@/app/shared/i18n/server";
 import { fetchMyTrades, type Trade } from "../exchange/fetchTrades";
 import { formatLinkCode } from "../exchange/trade-utils";
 import TradeCard from "../exchange/trade-card";
@@ -13,7 +15,7 @@ export default async function MyTrades({
   // 從 /exchange 認領成功跳過來時帶的單號，要在上面提示、並把那張卡標出來
   claimedId?: number;
 }) {
-  const res = await fetchMyTrades();
+  const [res, t] = await Promise.all([fetchMyTrades(), getDictionary()]);
 
   if (!res.ok) {
     return (
@@ -32,17 +34,17 @@ export default async function MyTrades({
 
   return (
     <div className="flex flex-col gap-8">
-      {justClaimed && <ClaimedNotice trade={justClaimed} />}
+      {justClaimed && <ClaimedNotice trade={justClaimed} t={t} />}
 
       <TradeSection
-        title="我發的單"
-        empty="還沒發過交換單"
+        title={t.profile.myPosts}
+        empty={t.profile.noPosts}
         trades={posts}
         user={user}
       />
       <TradeSection
-        title="我認領的單"
-        empty="還沒認領過交換單"
+        title={t.profile.myClaims}
+        empty={t.profile.noClaims}
         trades={claims}
         user={user}
         highlightId={claimedId}
@@ -51,27 +53,32 @@ export default async function MyTrades({
   );
 }
 
-function ClaimedNotice({ trade }: { trade: Trade }) {
+function ClaimedNotice({ trade, t }: { trade: Trade; t: Dictionary }) {
   return (
     <div
       role="status"
       className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border-warm bg-surface-2 p-4"
     >
       <p className="text-sm">
-        配對成功！你剛認領了交換單 <strong>#{trade.id}</strong>：
-        <span className="capitalize">
-          {trade.offered.name} ⇄ {trade.wanted.name}
-        </span>
-        {trade.linkCode && (
-          <>
-            ，連線密語{" "}
-            <strong className="font-mono">{formatLinkCode(trade.linkCode)}</strong>
-          </>
-        )}
-        。到遊戲裡輸入密語，就能和 @{trade.creator} 交換。
+        {formatNodes(t.profile.claimedNotice, {
+          id: <strong>#{trade.id}</strong>,
+          pair: (
+            <span className="capitalize">
+              {trade.offered.name} ⇄ {trade.wanted.name}
+            </span>
+          ),
+          linkCode:
+            trade.linkCode &&
+            formatNodes(t.profile.claimedLinkCode, {
+              code: (
+                <strong className="font-mono">{formatLinkCode(trade.linkCode)}</strong>
+              ),
+            }),
+          creator: trade.creator,
+        })}
       </p>
       <a href={`#trade-${trade.id}`} className="text-sm underline">
-        看這張單
+        {t.profile.viewTrade}
       </a>
     </div>
   );

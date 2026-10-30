@@ -1,0 +1,127 @@
+import type { Dictionary } from "./zh-Hant";
+
+const en: Dictionary = {
+  meta: {
+    description: "Browse the Pokédex, and trade with other trainers.",
+  },
+  common: {
+    all: "All",
+    processing: "Working…",
+    retry: "Try again",
+  },
+  language: {
+    label: "Language",
+  },
+  nav: {
+    pokedex: "Pokédex",
+    exchange: "Exchange",
+    newTrade: "New Trade",
+    profile: "Profile",
+    home: "Back to Pokédex",
+    guest: "Not signed in",
+    signIn: "Sign In",
+    signOut: "Sign Out",
+    signingOut: "Signing out…",
+  },
+  filter: {
+    type: "Type",
+    generation: "Generation",
+    search: "Search",
+    searchPlaceholder: "Search by English name, e.g. pikachu",
+  },
+  pokedex: {
+    title: "Pokédex",
+    notifications: "Notifications",
+    summary: "Showing {from} to {to} of {total} Pokémon",
+  },
+  pokemon: {
+    back: "Back to Pokédex",
+    baseStats: "Base Stats",
+    stats: {
+      hp: "HP",
+      attack: "Attack",
+      defense: "Defense",
+      spAtk: "Sp. Atk",
+      spDef: "Sp. Def",
+      speed: "Speed",
+    },
+  },
+  exchange: {
+    title: "Exchange",
+    error: "Something went wrong in Exchange",
+    sideTabs: "Trade view",
+    sides: {
+      want: { label: "I want", searchLabel: "Pokémon I want" },
+      offer: { label: "I offer", searchLabel: "Pokémon I offer" },
+    },
+    status: {
+      open: "Open",
+      claimed: "Matched",
+      completed: "Completed",
+      cancelled: "Withdrawn",
+    },
+    justNow: "just now",
+    swap: "Trade",
+    you: "you",
+    claimedBy: "Claimed by {name}",
+    linkCode: "Link code",
+    signInToTrade: "Sign in to trade",
+    claim: "Trade",
+    complete: "Done",
+    cancel: "Withdraw",
+    noMatch: "No trades match your filters",
+    noOpen: "No open trades right now",
+    summary: "Showing {from} to {to} of {total} open trades",
+    errors: {
+      pickBoth: "Pick both the Pokémon you offer and the one you want",
+      samePokemon: "The Pokémon you offer and want can't be the same",
+      linkCode: "The link code must be 8 digits",
+    },
+  },
+  newTrade: {
+    title: "New Trade",
+    back: "Back to trades",
+    offered: "I offer",
+    wanted: "I want",
+    pick: "Tap to pick",
+    linkCodeLabel: "Link code (8 digits)",
+    submit: "Post",
+    pickFirst: "Pick both Pokémon first",
+    hint: "Pick two Pokémon and enter a link code to post",
+    noPokemon: "No Pokémon found",
+  },
+  profile: {
+    title: "Profile",
+    error: "Something went wrong on your profile",
+    myPosts: "My trades",
+    noPosts: "You haven't posted any trades yet",
+    myClaims: "Trades I claimed",
+    noClaims: "You haven't claimed any trades yet",
+    claimedNotice:
+      "Matched! You just claimed trade {id}: {pair}{linkCode}. Enter the link code in the game to trade with @{creator}.",
+    claimedLinkCode: ", link code {code}",
+    viewTrade: "View trade",
+  },
+  auth: {
+    tabs: "Sign in or register",
+    login: "Sign In",
+    register: "Register",
+    registerSubmit: "Register and sign in",
+    username: "Username",
+    usernamePlaceholder: "Username (3–20 letters, digits or _)",
+    password: "Password",
+    passwordPlaceholder: "Password (at least 8 characters)",
+    or: "or",
+    google: "Continue with Google",
+    facebook: "Continue with Facebook",
+    comingSoon: "Coming soon",
+    errors: {
+      missingCredentials: "Enter your username and password",
+      invalidUsername:
+        "Username must be 3–20 characters: letters, digits or underscores",
+      passwordTooShort: "Password must be at least {min} characters",
+    },
+  },
+};
+
+export default en;

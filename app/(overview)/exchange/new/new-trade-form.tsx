@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { Input } from "@/design-system/input";
 import { Field, FieldLabel } from "@/design-system/field";
 import { SubmitButton } from "@/app/shared/submit-button";
+import { useDictionary } from "@/app/shared/i18n";
 import { createTrade } from "../actions";
 import { formatLinkCode, LINK_CODE_LENGTH } from "../trade-utils";
 
@@ -15,6 +16,7 @@ export default function NewTradeForm({
   offeredId?: number;
   wantedId?: number;
 }) {
+  const t = useDictionary();
   const [state, formAction] = useActionState(createTrade, null);
   const [linkCode, setLinkCode] = useState("");
   const ready = !!offeredId && !!wantedId;
@@ -26,7 +28,7 @@ export default function NewTradeForm({
 
       <div className="flex flex-col sm:flex-row sm:items-end gap-3">
         <Field className="sm:max-w-xs">
-          <FieldLabel htmlFor="linkCode">連線密語（8 碼）</FieldLabel>
+          <FieldLabel htmlFor="linkCode">{t.newTrade.linkCodeLabel}</FieldLabel>
           <Input
             id="linkCode"
             name="linkCode"
@@ -37,15 +39,16 @@ export default function NewTradeForm({
             placeholder="1234-5678"
             maxLength={LINK_CODE_LENGTH + 1} // 含中間的 dash
             aria-invalid={!!state?.error}
-            className="rounded-sm p-5 border-none bg-[#6B7280] font-mono"
+            className="h-12 rounded-sm px-5 border-none bg-[#6B7280] font-mono"
           />
         </Field>
         <SubmitButton
           disabled={!ready}
-          title={ready ? undefined : "先選好兩隻寶可夢"}
-          className="px-6 py-3 rounded bg-red-500 hover:bg-red-400"
+          title={ready ? undefined : t.newTrade.pickFirst}
+          // 跟左邊的密語框一樣高，底部對齊
+          className="h-12 px-6 rounded bg-red-500 hover:bg-red-400"
         >
-          發文
+          {t.newTrade.submit}
         </SubmitButton>
       </div>
 
@@ -55,7 +58,7 @@ export default function NewTradeForm({
         </p>
       ) : (
         !ready && (
-          <p className="text-sm text-muted">選好兩隻寶可夢、填好密語就能發文</p>
+          <p className="text-sm text-muted">{t.newTrade.hint}</p>
         )
       )}
     </form>

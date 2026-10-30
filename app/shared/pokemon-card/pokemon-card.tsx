@@ -20,7 +20,8 @@ export function PokemonCard({
 
   return (
     <div
-      className="flex flex-col lg:p-4 gap-3 w-full aspect-[228/280] rounded-3xl overflow-hidden"
+      // 手機一排三張、每張只有 110px 寬，名字列和間距要縮小，圖才不會被擠扁
+      className="flex flex-col lg:p-4 gap-1 md:gap-3 w-full aspect-[228/280] rounded-2xl md:rounded-3xl overflow-hidden"
       style={{ background }}
     >
       <div className="relative flex-1 lg:rounded-2xl overflow-hidden bg-white/10 hover:scale-105 transition-transform">
@@ -37,8 +38,8 @@ export function PokemonCard({
           <QuestionMarkCircleIcon className="w-full h-full text-white/50 p-6" />
         )}
       </div>
-      <div className="flex flex-col items-center justify-center min-h-[40px]">
-        <span className="text-sm font-medium  w-full text-center capitalize line-clamp-2">
+      <div className="flex flex-col items-center justify-center min-h-7 md:min-h-[40px] px-1">
+        <span className="text-xs md:text-sm font-medium w-full text-center capitalize line-clamp-2">
           {name}
         </span>
       </div>
@@ -48,7 +49,7 @@ export function PokemonCard({
 
 export function PokemonCardSkeleton() {
   return (
-    <div className="bg-white/10 flex flex-col lg:p-4 gap-3 w-full aspect-[228/280] rounded-3xl overflow-hidden">
+    <div className="bg-white/10 flex flex-col lg:p-4 gap-3 w-full aspect-[228/280] rounded-2xl md:rounded-3xl overflow-hidden">
       <div className="flex flex-col items-center">
         <span className="mt-6" />
       </div>
@@ -59,7 +60,7 @@ export function PokemonCardSkeleton() {
 // 跟卡片格一樣的排法，資料回來時版面不會跳
 export function PokemonCardsSkeleton({ count = 20 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+    <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-5">
       {Array.from({ length: count }).map((_, id) => (
         <PokemonCardSkeleton key={id} />
       ))}

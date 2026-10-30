@@ -1,7 +1,8 @@
-// 假的 /auth 和 /trades：MOCK_API=true 時 apiFetch 不打 Render，改走這裡。
+// 假的 /trades：MOCK_API=true 時 apiFetch 不打真的 API，改走這裡。/auth 已經做好，一律打真的。
 // 資料放在記憶體，dev server 重啟就回到初始狀態。
-// 等 pokemon-api 把 API_TODO.md 的端點做好，把 .env.local 的 MOCK_API 拿掉、這個檔案刪掉就好。
+// 等 pokemon-api 把 /trades 做好，把 .env.local 的 MOCK_API 拿掉、這個檔案刪掉就好。
 // 行為照 API_TODO.md 的規格：狀態碼、錯誤格式、密語只回給雙方、認領只能成功一次
+import { z } from "zod";
 
 type MockPokemon = {
   id: number;
@@ -67,9 +68,7 @@ const trade = (
   ...extra,
 });
 
-// 預設登入帳號是 ryan，密碼隨便打。mei、ken、yu 是其他玩家
-const users = new Set(["ryan", "mei", "ken", "yu"]);
-
+// 用真的 API 註冊一個 ryan 登入，就會看到 ryan 的單。mei、ken、yu 是其他玩家
 const trades: MockTrade[] = [
   trade("mei", P.charmander, P.squirtle, 120),
   trade("ken", P.pikachu, P.eevee, 300),
@@ -89,7 +88,11 @@ const trades: MockTrade[] = [
 
 type Reply = { status: number; json: unknown };
 const ok = (json: unknown, status = 200): Reply => ({ status, json });
-const fail = (status: number, error: string): Reply => ({ status, json: { error } });
+// 跟真的 API 一樣回 { error, message }。前端只顯示 message，所以假資料的代碼都用 mock_error
+const fail = (status: number, message: string): Reply => ({
+  status,
+  json: { error: "mock_error", message },
+});
 
 // 密語只給發文者和認領者；generation 是假資料自己篩選用的，不回給前端
 function serialize(t: MockTrade, me: string | null) {
@@ -104,13 +107,23 @@ function serialize(t: MockTrade, me: string | null) {
   };
 }
 
-const userOf = (username: string) => ({
-  id: [...users].indexOf(username) + 1,
-  username,
-});
+// token 是真的 API 發的 JWT，只讀 payload 裡的 username 當作「我」。假資料不驗簽章，真的 API 會驗
+const tokenPayloadSchema = z.object({ username: z.string() });
 
-export function isMockApi() {
-  return process.env.MOCK_API === "true";
+function usernameFromToken(token?: string | null): string | null {
+  const payload = token?.split(".")[1];
+  if (!payload) return null;
+  try {
+    const json = JSON.parse(Buffer.from(payload, "base64url").toString());
+    const parsed = tokenPayloadSchema.safeParse(json);
+    return parsed.success ? parsed.data.username : null;
+  } catch {
+    return null;
+  }
+}
+
+export function isMockApi(path: string) {
+  return process.env.MOCK_API === "true" && !path.startsWith("/auth");
 }
 
 export async function mockApi({
@@ -126,28 +139,8 @@ export async function mockApi({
 }): Promise<Reply> {
   const url = new URL(path, "http://mock");
   const segments = url.pathname.split("/").filter(Boolean);
-  const me = token?.startsWith("mock:") ? token.slice("mock:".length) : null;
+  const me = usernameFromToken(token);
   const input = (body ?? {}) as Record<string, unknown>;
-
-  // ---- auth ----
-  if (segments[0] === "auth") {
-    if (method === "POST" && (segments[1] === "login" || segments[1] === "register")) {
-      const username = String(input.username ?? "").trim();
-      const password = String(input.password ?? "");
-      if (!username || !password) return fail(400, "請輸入帳號和密碼");
-      if (segments[1] === "register" && users.has(username)) {
-        return fail(409, "這個帳號已經有人用了");
-      }
-      if (segments[1] === "login" && !users.has(username)) {
-        return fail(401, "帳號或密碼錯誤");
-      }
-      users.add(username);
-      return ok({ token: `mock:${username}`, user: userOf(username) }, segments[1] === "register" ? 201 : 200);
-    }
-    if (method === "GET" && segments[1] === "me") {
-      return me ? ok(userOf(me)) : fail(401, "請先登入");
-    }
-  }
 
   // ---- trades ----
   if (segments[0] === "trades") {

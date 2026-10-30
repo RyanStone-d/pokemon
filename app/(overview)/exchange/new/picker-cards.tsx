@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { PokemonCard } from "@/app/shared/pokemon-card";
 import { Pagination } from "@/app/shared/pagination";
 import { fetchPokemonList, fetchTotalPages } from "@/app/shared/pokemon";
+import { getDictionary } from "@/app/shared/i18n/server";
 import { newTradeUrl, type NewTradeParams } from "./url";
 
 export type PickedPokemon = {
@@ -22,13 +23,14 @@ export default async function PickerCards({
   const { step, offered, wanted, page, type, generation, query } = params;
 
   // 兩個函式打同一個網址，Next 會合併成一次請求
-  const [list, totalPages] = await Promise.all([
+  const [list, totalPages, t] = await Promise.all([
     fetchPokemonList(page, type, generation, query),
     fetchTotalPages(type, generation, query),
+    getDictionary(),
   ]);
 
   if (list.length === 0) {
-    return <p className="text-sm text-red-300">找不到符合的寶可夢</p>;
+    return <p className="text-sm text-red-300">{t.newTrade.noPokemon}</p>;
   }
 
   // 選完這格、另一格還是空的，就自動跳去選另一格
@@ -42,7 +44,7 @@ export default async function PickerCards({
 
   return (
     <>
-      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-5">
         {list.map((pokemon, index) => {
           const selected = pokemon.id === selectedId;
           const href = newTradeUrl(
@@ -57,7 +59,7 @@ export default async function PickerCards({
               href={href}
               scroll={false}
               aria-pressed={selected}
-              className={cn("rounded-3xl", selected && "ring-4 ring-foreground")}
+              className={cn("rounded-2xl md:rounded-3xl", selected && "ring-4 ring-foreground")}
             >
               <PokemonCard
                 name={pokemon.name}

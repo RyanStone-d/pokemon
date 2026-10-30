@@ -45,7 +45,7 @@ export default async function Cards({
   );
 
   return (
-    <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+    <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-5">
       {pokemonList.map((pokemon, index) => (
         <ViewTransition key={pokemon.id} name={`pokemon-card-${pokemon.id}`}>
           <Link

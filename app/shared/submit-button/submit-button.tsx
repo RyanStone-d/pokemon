@@ -2,16 +2,18 @@
 
 import { useFormStatus } from "react-dom";
 import { cn } from "@/lib/utils";
+import { useDictionary } from "@/app/shared/i18n";
 
 // 放在 <form action={serverAction}> 裡面用：送出中自動 disabled、換字，不用每個表單自己管 pending
 export default function SubmitButton({
   children,
-  pendingText = "處理中…",
+  pendingText,
   className,
   disabled,
   ...props
 }: React.ComponentProps<"button"> & { pendingText?: string }) {
   const { pending } = useFormStatus();
+  const t = useDictionary();
   return (
     <button
       type="submit"
@@ -23,7 +25,7 @@ export default function SubmitButton({
         className,
       )}
     >
-      {pending ? pendingText : children}
+      {pending ? (pendingText ?? t.common.processing) : children}
     </button>
   );
 }

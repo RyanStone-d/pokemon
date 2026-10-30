@@ -25,15 +25,15 @@ describe("Search 組件", () => {
 
   it("應正確渲染搜尋輸入框", () => {
     render(<Search />);
-    expect(screen.getByPlaceholderText("Search by name")).toBeInTheDocument();
-    expect(screen.getByText("Search")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("輸入英文名字，例如 pikachu")).toBeInTheDocument();
+    expect(screen.getByText("搜尋")).toBeInTheDocument();
   });
 
   it("輸入文字後應更新 URL query 參數", async () => {
     const user = userEvent.setup();
     render(<Search />);
 
-    const input = screen.getByPlaceholderText("Search by name");
+    const input = screen.getByPlaceholderText("輸入英文名字，例如 pikachu");
     await user.type(input, "pikachu");
 
     expect(mockReplace).toHaveBeenLastCalledWith(
@@ -45,7 +45,7 @@ describe("Search 組件", () => {
     const user = userEvent.setup();
     render(<Search />);
 
-    const input = screen.getByPlaceholderText("Search by name");
+    const input = screen.getByPlaceholderText("輸入英文名字，例如 pikachu");
     // 先輸入文字，再清空
     await user.type(input, "pikachu");
     mockReplace.mockClear();

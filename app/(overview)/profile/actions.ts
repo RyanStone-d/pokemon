@@ -4,7 +4,9 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { apiFetch } from "@/app/shared/api";
 import { clearToken, setToken, userSchema } from "@/app/shared/auth";
-import { validateLogin, validateRegister } from "./validate";
+import { formatMessage } from "@/app/shared/i18n";
+import { getDictionary } from "@/app/shared/i18n/server";
+import { PASSWORD_MIN_LENGTH, validateLogin, validateRegister } from "./validate";
 
 // 給 useActionState 用。失敗時把 username 一起回去，表單重畫才不會把打好的帳號清掉
 export type AuthState = { error: string; username: string } | null;
@@ -27,8 +29,14 @@ async function authenticate(
   const password = String(formData.get("password") ?? "");
 
   const validate = mode === "login" ? validateLogin : validateRegister;
-  const message = validate({ username, password });
-  if (message) return { error: message, username };
+  const invalid = validate({ username, password });
+  if (invalid) {
+    const { errors } = (await getDictionary()).auth;
+    return {
+      error: formatMessage(errors[invalid], { min: PASSWORD_MIN_LENGTH }),
+      username,
+    };
+  }
 
   const res = await apiFetch(`/auth/${mode}`, {
     method: "POST",

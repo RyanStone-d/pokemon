@@ -15,6 +15,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { Field, FieldLabel } from "@/design-system/field";
 import { SelectOption } from "../pokemon";
 import { cn } from "@/lib/utils";
+import { useDictionary } from "@/app/shared/i18n";
 
 type RouteSelectProps = Omit<
   React.ComponentProps<typeof SelectTrigger>,
@@ -33,6 +34,7 @@ export default function RouteSelect({
   options,
   ...props
 }: RouteSelectProps) {
+  const t = useDictionary();
   const pathName = usePathname();
   const searchParams = useSearchParams();
   const { replace } = useRouter();
@@ -73,14 +75,14 @@ export default function RouteSelect({
             { "opacity-50": isPending },
           )}
         >
-          <SelectValue placeholder="Theme" />
+          <SelectValue placeholder={t.common.all} />
         </SelectTrigger>
         <SelectContent
           position="popper"
           className="max-h-60 overflow-y-auto bg-[#6B7280]"
         >
           <SelectGroup>
-            <SelectItem value={allOption}>All</SelectItem>
+            <SelectItem value={allOption}>{t.common.all}</SelectItem>
             {options.map(({ label, value }) => (
               <SelectItem key={label} value={value} className="capitalize">
                 {label}

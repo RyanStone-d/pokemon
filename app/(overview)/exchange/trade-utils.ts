@@ -17,20 +17,28 @@ export function formatLinkCode(input: string) {
   return digits.length > 4 ? `${digits.slice(0, 4)}-${digits.slice(4)}` : digits;
 }
 
-// 「2 小時前」這種相對時間。超過一個月就顯示日期
-export function relativeTime(iso: string, now: Date = new Date()) {
+// 「2 小時前」這種相對時間，用 Intl 依語系排字。超過一個月就顯示日期。
+// 一分鐘內的「剛剛」Intl 沒有合適的說法，由外面從字典傳進來
+export function relativeTime(
+  iso: string,
+  { locale, justNow }: { locale: string; justNow: string },
+  now: Date = new Date(),
+) {
   const time = new Date(iso).getTime();
   if (Number.isNaN(time)) return "";
 
+  // numeric: "always" 才會是「2 天前」，不然會變成「前天」
+  const format = new Intl.RelativeTimeFormat(locale, { numeric: "always" });
+
   const minutes = Math.floor((now.getTime() - time) / 60_000);
-  if (minutes < 1) return "剛剛";
-  if (minutes < 60) return `${minutes} 分鐘前`;
+  if (minutes < 1) return justNow;
+  if (minutes < 60) return format.format(-minutes, "minute");
 
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} 小時前`;
+  if (hours < 24) return format.format(-hours, "hour");
 
   const days = Math.floor(hours / 24);
-  if (days < 30) return `${days} 天前`;
+  if (days < 30) return format.format(-days, "day");
 
-  return new Date(iso).toLocaleDateString("zh-TW");
+  return new Date(iso).toLocaleDateString(locale);
 }

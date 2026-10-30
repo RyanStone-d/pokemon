@@ -13,6 +13,7 @@ import {
   type PokemonType,
 } from "@/app/shared/pokemon";
 import { fetchPokemonDetail } from "@/app/shared/pokemon";
+import { getDictionary } from "@/app/shared/i18n/server";
 
 export default async function Page(props: {
   params: Promise<{ id: string }>;
@@ -24,15 +25,16 @@ export default async function Page(props: {
   }>;
 }) {
   const { id } = await props.params;
-  const pokemon = await fetchPokemonDetail(id);
+  const [pokemon, t] = await Promise.all([fetchPokemonDetail(id), getDictionary()]);
   const { name, types, image, shape, stats } = pokemon;
 
-  const editType = types.map((t) => ({
-    bg: TYPE_COLOR_MAP[t as PokemonType],
-    text: t as PokemonType,
+  // 顏色看代碼，顯示的名字由 API 依語系回傳
+  const editType = types.map((type) => ({
+    bg: TYPE_COLOR_MAP[type.code as PokemonType],
+    text: type.name,
   }));
 
-  const background = getPokemonBackground(types);
+  const background = getPokemonBackground(types.map((type) => type.code));
 
   const searchParams = await props.searchParams;
   const backUrl = `/?${new URLSearchParams(
@@ -41,19 +43,19 @@ export default async function Page(props: {
     ) as Record<string, string>,
   )}`;
 
-  const STAT_COLOR: Record<string, string> = {
-    HP: "bg-type-fighting", // #c03028 紅
-    Atk: "bg-type-fire", // #f08030 橘
-    Def: "bg-type-flying", // #e0c068 黃
-    SpA: "bg-type-water", // #6890f0 藍
-    SpD: "bg-type-grass", // #78c850 綠
-    Spe: "bg-type-psychic", // #f85888 粉
+  const STAT_COLOR: Record<(typeof stats)[number]["key"], string> = {
+    hp: "bg-type-fighting", // #c03028 紅
+    attack: "bg-type-fire", // #f08030 橘
+    defense: "bg-type-flying", // #e0c068 黃
+    spAtk: "bg-type-water", // #6890f0 藍
+    spDef: "bg-type-grass", // #78c850 綠
+    speed: "bg-type-psychic", // #f85888 粉
   };
 
-  const editStats = stats.map(({ name, val }) => ({
-    name,
+  const editStats = stats.map(({ key, val }) => ({
+    name: t.pokemon.stats[key],
     val,
-    color: STAT_COLOR[name],
+    color: STAT_COLOR[key],
   }));
 
   return (
@@ -77,6 +79,7 @@ export default async function Page(props: {
         <div className="p-6 flex justify-between">
           <Link
             href={backUrl}
+            title={t.pokemon.back}
             transitionTypes={["nav-back"]}
             className="rounded-md p-2 bg-white/20 backdrop-blur-md border border-[#002f35]/30 cursor-pointer"
           >
@@ -123,7 +126,7 @@ export default async function Page(props: {
           </div>
 
           <div className="my-12 bg-overlay/80 rounded p-6 flex flex-col items-center w-full max-w-lg">
-            <span className="mb-6">Base Stats</span>
+            <span className="mb-6">{t.pokemon.baseStats}</span>
             {editStats.map(({ name, val, color }) => (
               <div
                 key={name}

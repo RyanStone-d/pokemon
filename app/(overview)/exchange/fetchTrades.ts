@@ -34,13 +34,6 @@ export type TradePokemon = z.infer<typeof tradePokemonSchema>;
 export type Trade = z.infer<typeof tradeSchema>;
 export type TradeList = z.infer<typeof tradeListSchema>;
 
-export const TRADE_STATUS_TEXT: Record<Trade["status"], string> = {
-  open: "等待交換",
-  claimed: "已配對",
-  completed: "已完成",
-  cancelled: "已下架",
-};
-
 // 公開列表：只有 open 的單。名字、屬性、世代的參數名跟 /pokemon 一樣，
 // side 決定它們套在 offered 還是 wanted（見 trade-side.ts）。
 // 有登入會帶 token，API 才會在自己發的單上附 linkCode
