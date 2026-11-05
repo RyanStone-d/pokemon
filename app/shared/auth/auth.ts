@@ -12,7 +12,7 @@ import {
   type User,
 } from "./session";
 
-export { userSchema, type User } from "./session";
+export { authResponseSchema, userSchema, type User } from "./session";
 
 // 同一次請求裡不管幾個元件呼叫，只解密一次
 export const getSession = cache(async () =>

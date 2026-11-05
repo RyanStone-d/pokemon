@@ -13,7 +13,7 @@ const AUTH_TABS: AuthMode[] = ["login", "register"];
 
 // 沒登入時的面板：上面切登入／註冊，中間是對應的表單，下面第三方登入。
 // 只有「現在在哪個 tab」是前端狀態，送出都走 Server Action
-export default function AuthPanel() {
+export default function AuthPanel({ googleFailed }: { googleFailed: boolean }) {
   const t = useDictionary();
   const [mode, setMode] = useState<AuthMode>("login");
 
@@ -35,7 +35,7 @@ export default function AuthPanel() {
       </div>
       {/* key 讓切換 tab 時欄位和錯誤訊息重置，不會把登入打一半的帳密帶去註冊 */}
       {mode === "login" ? <LoginForm key="login" /> : <RegisterForm key="register" />}
-      <SocialButtons />
+      <SocialButtons googleFailed={googleFailed} />
     </div>
   );
 }

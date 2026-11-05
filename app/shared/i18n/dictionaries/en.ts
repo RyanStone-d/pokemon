@@ -120,6 +120,7 @@ const en: Dictionary = {
       invalidUsername:
         "Username must be 3–20 characters: letters, digits or underscores",
       passwordTooShort: "Password must be at least {min} characters",
+      googleFailed: "Google sign-in failed. Please try again.",
     },
   },
 };

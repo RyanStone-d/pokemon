@@ -79,7 +79,8 @@ export function accessTokenExpiresSoon(apiToken: string) {
   }
 }
 
-const refreshResponseSchema = z.object({
+// 登入、註冊、Google 登入、換新 token，Express 都回這個格式
+export const authResponseSchema = z.object({
   token: z.string(),
   refreshToken: z.string(),
   user: userSchema,
@@ -121,7 +122,7 @@ async function requestRefresh(session: Session): Promise<RefreshResult> {
   if (res.status === 401) return null;
   if (!res.ok) return "unavailable";
 
-  const parsed = refreshResponseSchema.safeParse(await res.json().catch(() => null));
+  const parsed = authResponseSchema.safeParse(await res.json().catch(() => null));
   if (!parsed.success) return "unavailable";
   return {
     user: parsed.data.user,

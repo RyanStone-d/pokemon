@@ -7,18 +7,19 @@ import AuthPanel from "./auth-panel";
 import MyTrades from "./my-trades";
 import MyTradesSkeleton from "./my-trades-skeleton";
 
-// 認領成功後 /exchange 會導到 /profile?claimed=<單號>
+// 認領成功後 /exchange 會導到 /profile?claimed=<單號>；Google 登入失敗會導到 /profile?login=google_failed
 const searchParamsSchema = z.object({
   claimed: z.coerce.number().int().positive().optional().catch(undefined),
+  login: z.literal("google_failed").optional().catch(undefined),
 });
 
 // 跟首頁一樣是 Server Component：登入狀態從 cookie 來，沒有前端的 loading 狀態。
 // 使用者名字和登出都在側欄，這頁只放登入面板或我的交換單
 export default async function ProfilePage(props: {
-  searchParams?: Promise<{ claimed?: string }>;
+  searchParams?: Promise<{ claimed?: string; login?: string }>;
 }) {
   const [user, t] = await Promise.all([getCurrentUser(), getDictionary()]);
-  const { claimed } = searchParamsSchema.parse((await props.searchParams) ?? {});
+  const { claimed, login } = searchParamsSchema.parse((await props.searchParams) ?? {});
 
   return (
     <main className="flex flex-col min-h-full">
@@ -34,7 +35,7 @@ export default async function ProfilePage(props: {
         </div>
       ) : (
         <div className="flex-1 flex items-center justify-center p-6">
-          <AuthPanel />
+          <AuthPanel googleFailed={login === "google_failed"} />
         </div>
       )}
     </main>

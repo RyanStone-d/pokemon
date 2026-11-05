@@ -120,6 +120,7 @@ const ja: Dictionary = {
       missingCredentials: "ユーザー名とパスワードを入力してください",
       invalidUsername: "ユーザー名は英数字とアンダースコアで 3〜20 文字です",
       passwordTooShort: "パスワードは {min} 文字以上にしてください",
+      googleFailed: "Google でのログインに失敗しました。もう一度お試しください",
     },
   },
 };

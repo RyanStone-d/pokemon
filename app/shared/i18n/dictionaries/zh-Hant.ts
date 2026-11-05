@@ -119,6 +119,7 @@ const zhHant = {
       missingCredentials: "請輸入帳號和密碼",
       invalidUsername: "帳號要 3–20 個字，只能用英文、數字或底線",
       passwordTooShort: "密碼至少 {min} 個字",
+      googleFailed: "Google 登入失敗，請再試一次",
     },
   },
 };

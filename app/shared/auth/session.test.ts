@@ -56,8 +56,10 @@ describe("encryptSession / decryptSession", () => {
 
   test("改過一個字、鑰匙不對、過期、沒有 cookie 都當作沒登入", async () => {
     const value = await encryptSession(session());
-    const last = value.at(-1) === "A" ? "B" : "A";
-    expect(await decryptSession(value.slice(0, -1) + last)).toBeNull();
+    // 改密文那段的第一個字：base64url 最後一個字只有部分 bit 是資料，改了可能解回一樣的 bytes
+    const parts = value.split(".");
+    parts[3] = (parts[3][0] === "A" ? "B" : "A") + parts[3].slice(1);
+    expect(await decryptSession(parts.join("."))).toBeNull();
 
     vi.stubEnv("SESSION_SECRET", KEY_B);
     expect(await decryptSession(value)).toBeNull();
