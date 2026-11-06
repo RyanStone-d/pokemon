@@ -3,7 +3,7 @@
 // proxy.ts 和 auth.ts 都會用，所以這裡不能 import next/headers
 import { EncryptJWT, decodeJwt, jwtDecrypt } from "jose";
 import { z } from "zod";
-import { API_URL } from "../api/api";
+import { API_URL } from "../api/url";
 
 export const SESSION_COOKIE = "pokenexus-session";
 

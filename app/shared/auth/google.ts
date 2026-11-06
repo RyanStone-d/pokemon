@@ -6,6 +6,8 @@ const AUTH_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth";
 
 export const GOOGLE_STATE_COOKIE = "google-oauth-state";
 export const GOOGLE_VERIFIER_COOKIE = "google-oauth-verifier";
+// 登入和綁定共用同一個 redirect URI，回程靠這個 cookie 分辨這次要做哪一個
+export const GOOGLE_LINK_COOKIE = "google-oauth-link";
 
 // 出發到回來之間要在 Google 那邊登入、按同意，給 10 分鐘
 const GOOGLE_COOKIE_SECONDS = 10 * 60;

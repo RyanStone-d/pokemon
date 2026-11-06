@@ -123,7 +123,11 @@ function usernameFromToken(token?: string | null): string | null {
 }
 
 export function isMockApi(path: string) {
-  return process.env.MOCK_API === "true" && !path.startsWith("/auth");
+  return (
+    process.env.MOCK_API === "true" &&
+    !path.startsWith("/auth") &&
+    path !== "/user"
+  );
 }
 
 export async function mockApi({

@@ -8,6 +8,8 @@ const en: Dictionary = {
     all: "All",
     processing: "Working…",
     retry: "Try again",
+    cannotReachServer: "Can't reach the server. Please try again later.",
+    badResponse: "The server returned an unexpected response",
   },
   language: {
     label: "Language",
@@ -101,6 +103,16 @@ const en: Dictionary = {
       "Matched! You just claimed trade {id}: {pair}{linkCode}. Enter the link code in the game to trade with @{creator}.",
     claimedLinkCode: ", link code {code}",
     viewTrade: "View trade",
+    account: "Account settings",
+    saveUsername: "Save",
+    usernameSaved: "Username updated. Use the new username to sign in.",
+    linkGoogle: "Link Google account",
+    linkGoogleHint: "Once linked, you can sign in to this account with Google",
+    linkResults: {
+      google_linked: "Google account linked",
+      google_taken: "This Google account is already linked to another user",
+      google_failed: "Couldn't link your Google account. Please try again.",
+    },
   },
   auth: {
     tabs: "Sign in or register",

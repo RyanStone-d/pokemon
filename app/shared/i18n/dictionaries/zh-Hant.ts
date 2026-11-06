@@ -8,6 +8,8 @@ const zhHant = {
     all: "全部",
     processing: "處理中…",
     retry: "再試一次",
+    cannotReachServer: "連不上伺服器，請稍後再試",
+    badResponse: "伺服器回傳的格式不對",
   },
   language: {
     label: "語言",
@@ -101,6 +103,16 @@ const zhHant = {
       "配對成功！你剛認領了交換單 {id}：{pair}{linkCode}。到遊戲裡輸入密語，就能和 @{creator} 交換。",
     claimedLinkCode: "，連線密語 {code}",
     viewTrade: "看這張單",
+    account: "帳號設定",
+    saveUsername: "儲存",
+    usernameSaved: "帳號已更新，之後請用新帳號登入",
+    linkGoogle: "綁定 Google 帳號",
+    linkGoogleHint: "綁定後可以用 Google 登入這個帳號",
+    linkResults: {
+      google_linked: "Google 帳號已綁定",
+      google_taken: "這個 Google 帳號已經綁定其他使用者",
+      google_failed: "Google 綁定失敗，請再試一次",
+    },
   },
   auth: {
     tabs: "登入或註冊",

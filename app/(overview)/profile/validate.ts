@@ -18,11 +18,16 @@ export function validateLogin({
   return !username.trim() || !password ? "missingCredentials" : null;
 }
 
+export function validateUsername(username: string): ValidationError | null {
+  return USERNAME_PATTERN.test(username) ? null : "invalidUsername";
+}
+
 export function validateRegister({
   username,
   password,
 }: Credentials): ValidationError | null {
-  if (!USERNAME_PATTERN.test(username)) return "invalidUsername";
+  const invalid = validateUsername(username);
+  if (invalid) return invalid;
   if (password.length < PASSWORD_MIN_LENGTH) return "passwordTooShort";
   return null;
 }

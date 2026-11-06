@@ -1,1 +1,2 @@
-export { apiFetch, API_URL, type ApiResult } from "./api";
+export { apiFetch, type ApiResult } from "./api";
+export { API_URL } from "./url";

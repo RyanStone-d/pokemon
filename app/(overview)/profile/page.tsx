@@ -3,23 +3,29 @@ import { z } from "zod";
 
 import { getCurrentUser } from "@/app/shared/auth";
 import { getDictionary } from "@/app/shared/i18n/server";
+import AccountSettings from "./account-settings";
 import AuthPanel from "./auth-panel";
 import MyTrades from "./my-trades";
 import MyTradesSkeleton from "./my-trades-skeleton";
 
-// 認領成功後 /exchange 會導到 /profile?claimed=<單號>；Google 登入失敗會導到 /profile?login=google_failed
+// 認領成功後 /exchange 會導到 /profile?claimed=<單號>；Google 登入失敗會導到 /profile?login=google_failed；
+// 綁定 Google 的結果會導到 /profile?link=<結果>
 const searchParamsSchema = z.object({
   claimed: z.coerce.number().int().positive().optional().catch(undefined),
   login: z.literal("google_failed").optional().catch(undefined),
+  link: z
+    .enum(["google_linked", "google_taken", "google_failed"])
+    .optional()
+    .catch(undefined),
 });
 
 // 跟首頁一樣是 Server Component：登入狀態從 cookie 來，沒有前端的 loading 狀態。
-// 使用者名字和登出都在側欄，這頁只放登入面板或我的交換單
+// 使用者名字和登出都在側欄，這頁放登入面板，或帳號設定和我的交換單
 export default async function ProfilePage(props: {
-  searchParams?: Promise<{ claimed?: string; login?: string }>;
+  searchParams?: Promise<{ claimed?: string; login?: string; link?: string }>;
 }) {
   const [user, t] = await Promise.all([getCurrentUser(), getDictionary()]);
-  const { claimed, login } = searchParamsSchema.parse((await props.searchParams) ?? {});
+  const { claimed, login, link } = searchParamsSchema.parse((await props.searchParams) ?? {});
 
   return (
     <main className="flex flex-col min-h-full">
@@ -29,6 +35,7 @@ export default async function ProfilePage(props: {
 
       {user ? (
         <div className="flex flex-col gap-6 p-4 md:p-6">
+          <AccountSettings username={user.username} linkResult={link} />
           <Suspense fallback={<MyTradesSkeleton />}>
             <MyTrades user={user} claimedId={claimed} />
           </Suspense>

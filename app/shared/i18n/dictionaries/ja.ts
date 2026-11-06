@@ -9,6 +9,8 @@ const ja: Dictionary = {
     all: "すべて",
     processing: "処理中…",
     retry: "もう一度試す",
+    cannotReachServer: "サーバーに接続できません。しばらくしてからもう一度お試しください",
+    badResponse: "サーバーからの応答の形式が正しくありません",
   },
   language: {
     label: "言語",
@@ -102,6 +104,16 @@ const ja: Dictionary = {
       "交換成立！募集 {id} に応募しました：{pair}{linkCode}。ゲームであいことばを入れると @{creator} さんと交換できます。",
     claimedLinkCode: "、あいことば {code}",
     viewTrade: "この募集を見る",
+    account: "アカウント設定",
+    saveUsername: "保存",
+    usernameSaved: "ユーザー名を更新しました。次回からは新しいユーザー名でログインしてください",
+    linkGoogle: "Google アカウントを連携",
+    linkGoogleHint: "連携すると、Google でこのアカウントにログインできます",
+    linkResults: {
+      google_linked: "Google アカウントを連携しました",
+      google_taken: "この Google アカウントはすでに別のユーザーに連携されています",
+      google_failed: "Google アカウントを連携できませんでした。もう一度お試しください",
+    },
   },
   auth: {
     tabs: "ログインまたは新規登録",

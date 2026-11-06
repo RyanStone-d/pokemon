@@ -28,11 +28,19 @@ export async function getCurrentUser(): Promise<User | null> {
   return (await getSession())?.user ?? null;
 }
 
-// 下面兩個只能在 Server Action 裡呼叫，Next 不允許在 Server Component 改 cookie
+// 下面三個只能在 Server Action 裡呼叫，Next 不允許在 Server Component 改 cookie
 export async function setSession(user: User, apiToken: string, refreshToken: string) {
   const exp = newSessionExp();
   const value = await encryptSession({ user, apiToken, refreshToken, exp });
   (await cookies()).set(SESSION_COOKIE, value, sessionCookieOptions(exp));
+}
+
+// 改名字只換 user 和 access token：refresh token 沒變，到期時間也要跟著它，不能延長
+export async function updateSessionUser(user: User, apiToken: string) {
+  const session = await getSession();
+  if (!session) return;
+  const value = await encryptSession({ ...session, user, apiToken });
+  (await cookies()).set(SESSION_COOKIE, value, sessionCookieOptions(session.exp));
 }
 
 export async function clearSession() {

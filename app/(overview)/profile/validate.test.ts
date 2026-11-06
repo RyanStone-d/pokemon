@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { validateLogin, validateRegister } from "./validate";
+import { validateLogin, validateRegister, validateUsername } from "./validate";
 
 describe("validateLogin", () => {
   it("帳號或密碼空白就擋", () => {
@@ -10,6 +10,15 @@ describe("validateLogin", () => {
 
   it("有填就放行，對不對交給 API", () => {
     expect(validateLogin({ username: "ryan", password: "x" })).toBeNull();
+  });
+});
+
+describe("validateUsername", () => {
+  it("跟註冊同一套規則", () => {
+    expect(validateUsername("ryan_01")).toBeNull();
+    expect(validateUsername("ab")).toBe("invalidUsername");
+    expect(validateUsername("a".repeat(21))).toBe("invalidUsername");
+    expect(validateUsername("小智")).toBe("invalidUsername");
   });
 });
 
